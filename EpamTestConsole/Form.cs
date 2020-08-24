@@ -6,8 +6,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
 
 namespace EpamTestConsole
-{
-    //1
+{   
     [Serializable]
     public class Form
     {
