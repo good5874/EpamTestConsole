@@ -64,7 +64,7 @@ namespace EpamTestConsole
                         answerOptions = new List<string>();
                         for (; ; )
                         {
-                            var tmp = Console.ReadLine();
+                            string tmp = Console.ReadLine();
                             if (tmp == "n")
                             {
                                 break;
@@ -84,7 +84,24 @@ namespace EpamTestConsole
                     if (answerOptions != null)
                         options = true;
 
-                    section.Questions.Add(CreateQuestion(question, checkAnswer, options, answer, answerOptions));
+                    bool validateParam = false;
+                    if (String.IsNullOrEmpty(question) && String.IsNullOrEmpty(answer))
+                    {
+                        if(answerOptions!=null)
+                        {
+                            foreach(string str in answerOptions)
+                            {
+                                if(String.IsNullOrEmpty(str))
+                                {
+                                    validateParam = true;
+                                }
+                            }
+                        }                       
+                    }
+                    if (!validateParam)
+                    {
+                        section.Questions.Add(CreateQuestion(question, checkAnswer, options, answer, answerOptions));
+                    }
                 }
             }
         }
@@ -93,11 +110,7 @@ namespace EpamTestConsole
         {
             List<string> answers = new List<string>();
 
-            if (section.Parent == null)
-                Console.WriteLine(section.NameSection);
-            else if (section.Parent.Parent == null && section.Parent != null) Console.WriteLine(section.Parent.NameSection);
-            else if (section.Parent.Parent.Parent == null && section.Parent.Parent != null) Console.WriteLine(section.Parent.Parent.NameSection);
-
+            Console.WriteLine(section.NameSection);   
 
             foreach (Question question in section.Questions)
             {
