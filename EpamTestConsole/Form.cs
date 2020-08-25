@@ -1,40 +1,40 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Threading.Tasks;
 
 namespace EpamTestConsole
 {
-    //1
     [Serializable]
     public class Form
     {
-        public Section section = null;
-        public List<Section> sectionsLayer2 = new List<Section>();
-        public List<Section> sectionsLayer3 = new List<Section>();
+        public Section FirstLevelSection = null;
+        public List<Section> SecondLevelSection = new List<Section>();
+        public List<Section> ThirdLevelSection = new List<Section>();
 
 
-        public void CreateTest()
-        {            
-            Console.WriteLine("Введите тему теста");
-            Section section1 = new Section(Console.ReadLine());
+        public void CreateTest(string nameTest)
+        {
+            Section firstSection = new Section(nameTest);
 
-            section = section1;
+            FirstLevelSection = firstSection;
 
-            sectionsLayer2 = AddSection(section);
-            foreach (Section section in sectionsLayer2)
+            SecondLevelSection = AddSection(FirstLevelSection);
+
+            foreach (Section section in SecondLevelSection)
             {
                 foreach (Section sectionLayer3 in AddSection(section))
-                    sectionsLayer3.Add(sectionLayer3);
+                    ThirdLevelSection.Add(sectionLayer3);
             }
 
-            AddQuestion(section);
-            foreach (Section s in sectionsLayer2)
+            AddQuestion(FirstLevelSection);
+
+            foreach (Section s in SecondLevelSection)
+            {
                 AddQuestion(s);
-            foreach (Section s in sectionsLayer3)
-                AddQuestion(s);            
+            }
+            foreach (Section s in ThirdLevelSection)
+            {
+                AddQuestion(s);
+            }
         }
 
         public void AddQuestion(Section section)
@@ -65,7 +65,10 @@ namespace EpamTestConsole
                         for (; ; )
                         {
                             var tmp = Console.ReadLine();
-                            if (tmp == "n") break;
+                            if (tmp == "n")
+                            {
+                                break;
+                            }
                             else
                             {
                                 answerOptions.Add(tmp);
@@ -81,13 +84,12 @@ namespace EpamTestConsole
                     if (answerOptions != null)
                         options = true;
 
-
-                    section.CreateQuestion(question, checkAnswer, options, answer, answerOptions);
+                    section.Questions.Add(CreateQuestion(question, checkAnswer, options, answer, answerOptions));
                 }
             }
         }
 
-        public void ConsoleWriteSection(Section section)
+        public void WriteSectionToConsole(Section section)
         {
             List<string> answers = new List<string>();
 
@@ -117,8 +119,7 @@ namespace EpamTestConsole
                 answers.Add(answer);
             }
 
-
-        }//проверить варианты ответы
+        }//проверить ответы
 
         public List<Section> AddSection(Section section)
         {
@@ -136,43 +137,12 @@ namespace EpamTestConsole
             }
             return sections;
         }
-
-        public void SaveTest(Form form)
+        public Question CreateQuestion(string _question, bool _checkAnswer, bool _options,
+            string _answer = null, List<string> _answerOptions = null)
         {
-            Console.WriteLine("Сохранить?");
-            if (Console.ReadLine() == "y")
-            {
-                Console.WriteLine("Введите имя файла:");
-                BinaryFormatter formatter = new BinaryFormatter();
-                using (FileStream fs = new FileStream($"{Console.ReadLine()}.dat", FileMode.OpenOrCreate))
-                {                    
-                    formatter.Serialize(fs, form);
-
-                    Console.WriteLine("Сохранено");
-                }
-            }
+            Question question = new Question(_question, _checkAnswer, _options, _answer, _answerOptions);
+            return question;
         }
-      
-        public Form OpenTest()
-        {
-            Console.WriteLine("Открыть?");
-            if (Console.ReadLine() == "y")
-            {
-                BinaryFormatter formatter = new BinaryFormatter();
-                Console.WriteLine("Введите имя файла:");
-                using (FileStream fs = new FileStream($"{Console.ReadLine()}.dat", FileMode.OpenOrCreate))
-                {
-                    Form deserilizeForm = (Form)formatter.Deserialize(fs);
-                    return deserilizeForm;
-                }
-            }
-            else
-            {
-                new Exception("файл не найден");
-                return null;
-            }
-        }
-
 
     }
 }
