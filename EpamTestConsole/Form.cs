@@ -44,11 +44,11 @@ namespace EpamTestConsole
                 if (i > 0)
                 {
                     Console.WriteLine("Чтобы закончить добавление вопросов введите y");
-                    if (Console.ReadLine() == "y") break;
+                    if (Console.ReadLine() == Сommands.y.ToString()) break;
                 }
 
                 Console.WriteLine($"Добавить в {section.NameSection} добавить вопросы?");
-                if (Console.ReadLine() == "y")
+                if (Console.ReadLine() == Сommands.y.ToString())
                 {
 
                     Console.WriteLine("Введите вопрос:");
@@ -58,14 +58,14 @@ namespace EpamTestConsole
                     Console.WriteLine("Добавить варианты ответов?");
                     List<string> answerOptions = null;
 
-                    if (Console.ReadLine() == "y")
+                    if (Console.ReadLine() == Сommands.y.ToString())
                     {
                         Console.WriteLine("Введите n когда добавили достаточно вариантов ответов.");
                         answerOptions = new List<string>();
                         for (; ; )
                         {
                             string tmp = Console.ReadLine();
-                            if (tmp == "n")
+                            if (tmp == Сommands.n.ToString())
                             {
                                 break;
                             }
@@ -138,7 +138,7 @@ namespace EpamTestConsole
         {
             List<Section> sections = new List<Section>();
             Console.WriteLine($"Добавить потемы к {section.NameSection} ?");
-            if (Console.ReadLine() == "y")
+            if (Console.ReadLine() == Сommands.y.ToString())
             {
                 Console.WriteLine($"Сколько добавить к {section.NameSection} подтем?");
                 int sectionCount = Convert.ToInt32(Console.ReadLine());

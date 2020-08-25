@@ -11,14 +11,14 @@ namespace EpamTestConsole
             Form form = new Form();
 
             Console.WriteLine("Создать тест?");
-            if (Console.ReadLine() == "y")
+            if (Console.ReadLine() == Сommands.y.ToString())
             {
                 Console.WriteLine("Введите тему теста");
                 string nameTest = Console.ReadLine();
                 form.CreateTest(nameTest);
 
                 Console.WriteLine("Сохранить?");
-                if (Console.ReadLine() == "y")
+                if (Console.ReadLine() == Сommands.y.ToString())
                 {
                     Console.WriteLine("Введите имя файла:");
                     string nameFile = Console.ReadLine();
@@ -32,7 +32,7 @@ namespace EpamTestConsole
             }
 
             Console.WriteLine("Пройти тест?");
-            if (Console.ReadLine() == "y")
+            if (Console.ReadLine() == Сommands.y.ToString())
             {
                 Console.WriteLine("Введите имя файла теста:");
                 string nameFile = Console.ReadLine();
