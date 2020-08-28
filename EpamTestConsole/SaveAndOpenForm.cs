@@ -5,30 +5,30 @@ namespace EpamTestConsole
 {
     internal static class SaveAndOpenForm
     {
-        public static void SaveTest(Form form, string nameFile)
+        public static void SaveTest(Management management, string nameFile)
         {
             BinaryFormatter formatter = new BinaryFormatter();
 
             using (FileStream fs = new FileStream($"{nameFile}.dat", FileMode.OpenOrCreate))
             {
-                formatter.Serialize(fs, form);
+                formatter.Serialize(fs, management);
             }
         }
 
-        public static Form OpenTest(string nameFile)
+        public static Management OpenTest(string nameFile)
         {
             BinaryFormatter formatter = new BinaryFormatter();
 
             using (FileStream fs = new FileStream($"{nameFile}.dat", FileMode.OpenOrCreate))
             {
-                Form deserilizeForm = (Form)formatter.Deserialize(fs);
-                if (deserilizeForm == null)
+                Management deserilizeManagement = (Management)formatter.Deserialize(fs);
+                if (deserilizeManagement == null)
                 {
                     return null;
                 }
                 else
                 {
-                    return deserilizeForm;
+                    return deserilizeManagement;
                 }
             }
         }
