@@ -38,7 +38,7 @@ namespace EpamTestConsole
         {
             Console.WriteLine("Введите тему теста");
             string nameTest = Console.ReadLine();
-            management.CreateTest(nameTest);
+            management.CreateNameTest(nameTest);
         }
         public void EditTest()
         {
@@ -160,7 +160,7 @@ namespace EpamTestConsole
             {
                 if (StartOrEdit)
                 {
-                    management.StartTest();
+                    WalkTheTree();
                 }
                 else
                 {
