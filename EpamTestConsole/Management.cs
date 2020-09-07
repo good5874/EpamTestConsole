@@ -7,13 +7,24 @@ namespace EpamTestConsole
     [Serializable]
     public class Management
     {
-        TreeNode RootNode { get; set; } = new TreeNode(new Section("root"));
+        private TreeNode rootNode = new TreeNode(new Section("root"));
+        public TreeNode RootNode
+        {
+            get
+            {
+                return rootNode;
+            }
+            set
+            {
+                rootNode = value;
+            }
+        } 
 
         public void CreateTest(string nameTest)
         {
             RootNode.Section.NameSection = nameTest;
-            AddSection(RootNode);
-            AddQuestion(RootNode);           
+            //AddSection(RootNode);
+            //AddQuestion(RootNode);           
         }
         public void EditTest()
         {
@@ -57,6 +68,34 @@ namespace EpamTestConsole
                     break;
             }            
         }
+        public void newEditTest(string nameEditSection, string newNameSection = null, string numberQuestionEdit = null,
+            string numberQuestionDelete = null, string numberSectionDelete = null,
+            string question = null)
+        {
+            var node = RootNode.Search(RootNode, nameEditSection);
+
+            if (string.IsNullOrEmpty(newNameSection))
+            {                
+                node.Section.NameSection = newNameSection;
+            }
+            else if(string.IsNullOrEmpty(numberQuestionEdit)
+                && string.IsNullOrEmpty(question))
+            {
+                int i = Convert.ToInt32(numberQuestionEdit);
+                                
+                DeleteQuestion(node.Section, numberQuestionEdit); 
+                CreateQuestion(nameEditSection, question);                
+            }
+            else if (string.IsNullOrEmpty(numberQuestionDelete))
+            {
+                int i = Convert.ToInt32(numberQuestionDelete);
+                node.Section.Questions.RemoveAt(i);
+            }
+            else if (string.IsNullOrEmpty(numberSectionDelete))
+            {
+                rootNode.Delete(ref rootNode, nameEditSection);
+            }
+        }//new
         public void StartTest()
         {  
             Queue<TreeNode> q = new Queue<TreeNode>();
@@ -75,6 +114,7 @@ namespace EpamTestConsole
         }
         private void AddSection(TreeNode root)
         {
+            string text = "";
             Queue<TreeNode> q = new Queue<TreeNode>();
             q.Enqueue(root);
 
@@ -91,6 +131,7 @@ namespace EpamTestConsole
                     for (int i = 0; i < sectionCount; i++)
                     {
                         string nameSection = Console.ReadLine();
+                        text += temp.Section.NameSection + "/" + nameSection+"\n";
                         temp.AddChildNode(new TreeNode(new Section(nameSection)));
                     }
                 }
@@ -106,6 +147,35 @@ namespace EpamTestConsole
                 }
             }           
         }
+        public void CreateQuestion(string nameSection, string question)
+        {
+            var _question = question.Split('\n');
+            var node = RootNode.Search(RootNode, nameSection);
+            
+
+            bool checkAnswer = false;
+            bool options = false;
+            
+            if(_question[1]=="True")
+            {
+                checkAnswer = true;
+            }
+            if (_question[2] == "True")
+            {
+                options = true;
+            }
+            var answerOption = _question[4].Split('/').ToList();
+
+            node.Section.Questions.Add(new Question(_question[0], checkAnswer, options, _question[3], answerOption));
+
+        }//new
+        public void CreateSection(string _sections)
+        {
+            var sections = _sections.Split("/");
+            var node = RootNode.Search(RootNode, sections[0]);
+            node.AddChildNode(new TreeNode(new Section(sections[1])));
+
+        }//new
         private void AddQuestion(TreeNode root, bool edit = false)
         {
             Queue<TreeNode> q = new Queue<TreeNode>();
@@ -148,7 +218,7 @@ namespace EpamTestConsole
                 }
             }
         }
-        private List<Question> CreateQuestions(Section section)
+        public List<Question> CreateQuestions(Section section)
         {
             List<Question> Questions = new List<Question>();
 
@@ -184,6 +254,11 @@ namespace EpamTestConsole
                 Questions.Add(new Question(question, checkAnswer, options, answer, answerOptions));
                 answerOptions = AddAnswerOption(Questions.Last());
             }
+        }
+
+        private void newEditQuestion(string nameSection, string indexQuestion)
+        {
+
         }
         private void EditQuestion(Section section, string indexQuestion)
         {
@@ -237,8 +312,7 @@ namespace EpamTestConsole
             Console.WriteLine($"Добавить к <{question.TextQuestion}> варианты ответов?");
 
             if (Console.ReadLine() == Сommands.y.ToString())
-            {
-                answerOptions = new List<string>();
+            {               
                 Console.WriteLine("Введите n когда добавили достаточно вариантов ответов.");
                 answerOptions = new List<string>();
                 for (; ; )
@@ -259,7 +333,7 @@ namespace EpamTestConsole
         private void DeleteQuestion(Section section, string indexQuestion)
         {
             int i = Convert.ToInt32(indexQuestion);
-            Console.WriteLine($"Вопрос удалён <{section.Questions[i].TextQuestion}>");
+            //Console.WriteLine($"Вопрос удалён <{section.Questions[i].TextQuestion}>");
             section.Questions.RemoveAt(i);
         }
         private void WriteSectionToConsole(Section section)

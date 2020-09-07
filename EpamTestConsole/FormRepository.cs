@@ -3,7 +3,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 namespace EpamTestConsole
 {
-    internal static class SaveAndOpenForm
+    public static class FormRepository
     {
         public static void SaveTest(Management management, string nameFile)
         {
@@ -22,14 +22,7 @@ namespace EpamTestConsole
             using (FileStream fs = new FileStream($"{nameFile}.dat", FileMode.OpenOrCreate))
             {
                 Management deserilizeManagement = (Management)formatter.Deserialize(fs);
-                if (deserilizeManagement == null)
-                {
-                    return null;
-                }
-                else
-                {
-                    return deserilizeManagement;
-                }
+                return deserilizeManagement;
             }
         }
 
