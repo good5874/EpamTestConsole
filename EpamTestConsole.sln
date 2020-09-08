@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30320.27
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EpamTestConsole", "EpamTestConsole\EpamTestConsole.csproj", "{8D95916B-5C16-40B0-8040-EB79B4DCBC10}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EpamTestConsole", "EpamTestConsole\EpamTestConsole.csproj", "{8D95916B-5C16-40B0-8040-EB79B4DCBC10}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -2,59 +2,69 @@
 
 namespace EpamTestConsole
 {
-    enum Сommands { y, n }
-
+    enum Сommands { y, n, del }
     internal class Program
     {
         static void Main(string[] args)
-        {
-            Form form = new Form();
+        {  
+            Management management;           
 
             Console.WriteLine("Создать тест?");
             if (Console.ReadLine() == Сommands.y.ToString())
             {
+                management = new Management();
                 Console.WriteLine("Введите тему теста");
                 string nameTest = Console.ReadLine();
-                form.CreateTest(nameTest);
-
-                Console.WriteLine("Сохранить?");
-                if (Console.ReadLine() == Сommands.y.ToString())
-                {
-                    Console.WriteLine("Введите имя файла:");
-                    string nameFile = Console.ReadLine();
-                    SaveAndOpenForm.SaveTest(form, nameFile);
-                    Console.WriteLine("Сохранено");
-                }
-                else
-                {
-                    Console.WriteLine("Сохранение отменено");
-                }
+                management.CreateTest(nameTest);
+                Save(management);
             }
-
             Console.WriteLine("Пройти тест?");
             if (Console.ReadLine() == Сommands.y.ToString())
             {
                 Console.WriteLine("Введите имя файла теста:");
                 string nameFile = Console.ReadLine();
 
-                form = SaveAndOpenForm.OpenTest(nameFile);
-                if (form == null)
+                management = SaveAndOpenForm.OpenTest(nameFile);
+                if (management == null)
                 {
                     Console.WriteLine("Не удалось открыть файл");
                 }
                 else
                 {
-                    form.WriteSectionToConsole(form.FirstLevelSection);
-
-                    foreach (Section section in form.SecondLevelSection)
-                    {
-                        form.WriteSectionToConsole(section);
-                    }
-                    foreach (Section section in form.ThirdLevelSection)
-                    {
-                        form.WriteSectionToConsole(section);
-                    }
+                    management.StartTest();
                 }
+            }
+            Console.WriteLine("Редактировать тест?");
+            if (Console.ReadLine() == Сommands.y.ToString())
+            {
+                Console.WriteLine("Введите имя файла теста:");
+                string nameFile = Console.ReadLine();
+
+                management = SaveAndOpenForm.OpenTest(nameFile);
+                if (management == null)
+                {
+                    Console.WriteLine("Не удалось открыть файл");
+                }
+                else
+                {
+                    management.EditTest();
+                }
+                Save(management);
+            }            
+        }
+        private static void Save(Management management)
+        {
+            Console.WriteLine("Сохранить?");
+            if (Console.ReadLine() == Сommands.y.ToString())
+            {
+                Console.WriteLine("Введите имя файла:");
+                string nameFile = Console.ReadLine();
+                SaveAndOpenForm.SaveTest(management, nameFile);
+                Console.WriteLine("Сохранено");
+            }
+            else
+            {
+                Console.WriteLine("Сохранение отменено");
             }
         }
     }
