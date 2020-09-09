@@ -31,7 +31,6 @@ namespace EpamTestConsole
             node.Section.NameSection = newNameSection;
         }
 
-
         public void CreateQuestion(string nameSection, string question)
         {
             var _question = question.Split('\n');
@@ -52,7 +51,7 @@ namespace EpamTestConsole
 
             node.Section.Questions.Add(new Question(_question[0], checkAnswer, options, _question[3], answerOption));
 
-        }//new
+        }
 
         public void EditQuestion(string nameSection, string question)
         {
@@ -81,14 +80,14 @@ namespace EpamTestConsole
 
             node.Section.Questions[numberEditquestion] = new Question(_question[1], checkAnswer, options, _question[4], answerOption);
 
-        }//new
+        }
 
         public void CreateSection(string _sections)
         {
             var sections = _sections.Split("/");
             var node = RootNode.Search(RootNode, sections[0]);
             node.AddChildNode(new TreeNode(new Section(sections[1])));
-        }//new 
+        } 
 
         public void DeleteQuestion(string nameSection, string indexQuestion)
         {

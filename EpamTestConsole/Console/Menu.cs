@@ -8,7 +8,7 @@ namespace EpamTestConsole
     {
         Management management = new Management();
         delegate void Metod(TreeNode root);
-
+        CheckingQuestions checkingQuestions = new CheckingQuestions();
         public void StartConsole()
         {            
             Console.WriteLine("1. " + ConsoleMenuConstant.CreateTest);
@@ -26,6 +26,7 @@ namespace EpamTestConsole
                     break;
                 case "2":
                     OpenAndRunMethod(true);//start test
+                    WriteResultToConsole();
                     break;
                 case "3":
                     OpenAndRunMethod(false);//edit test
@@ -64,7 +65,7 @@ namespace EpamTestConsole
             }
         }
         private void WriteSectionToConsole(TreeNode node)
-        {
+        {            
             List<string> answers = new List<string>();
 
             Console.WriteLine(node.Section.NameSection);
@@ -75,7 +76,7 @@ namespace EpamTestConsole
                 Console.WriteLine("Вопрос: " + question.TextQuestion);
                 if (question.Options)
                 {
-                    int i = 1;
+                    int i = 0;
                     Console.WriteLine("Варианты ответа:");
                     foreach (var str in question.AnswerOptions)
                     {
@@ -89,10 +90,12 @@ namespace EpamTestConsole
                     Console.WriteLine("Введите ответ:");
                 }
                 answer = Console.ReadLine();
-                answers.Add(answer);
+                answers.Add(answer);                
             }
 
-        }//проверить ответы
+            checkingQuestions.CheckingAllQuestions(node.Section, answers);
+
+        }
 
         public void EditTest()
         {
@@ -308,6 +311,14 @@ namespace EpamTestConsole
             {
                 Console.WriteLine($"Добавление подтем к {node.Section.NameSection} отменено");
             }           
+        }
+
+        private void WriteResultToConsole()
+        {
+            foreach(VerifiedQuestion item in checkingQuestions.VerifiedQuestions)
+            {
+                Console.WriteLine(item.NameSection + "/" + item.TextQuestion + "/" + item.Answer + "/" + item.Result);
+            }
         }
 
         private static void Save(Management management)
