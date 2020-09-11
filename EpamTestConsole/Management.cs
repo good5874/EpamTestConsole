@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace EpamTestConsole
@@ -18,12 +17,12 @@ namespace EpamTestConsole
             {
                 rootNode = value;
             }
-        } 
+        }
 
         public void CreateNameTest(string nameTest)
         {
-            RootNode.Section.NameSection = nameTest;                       
-        }   
+            RootNode.Section.NameSection = nameTest;
+        }
 
         public void EditNameSection(string nameSection, string newNameSection)
         {
@@ -34,12 +33,12 @@ namespace EpamTestConsole
         public void CreateQuestion(string nameSection, string question)
         {
             var _question = question.Split('\n');
-            var node = RootNode.Search(RootNode, nameSection);            
+            var node = RootNode.Search(RootNode, nameSection);
 
             bool checkAnswer = false;
             bool options = false;
-            
-            if(_question[1]=="True")
+
+            if (_question[1] == "True")
             {
                 checkAnswer = true;
             }
@@ -57,7 +56,7 @@ namespace EpamTestConsole
         {
             var node = RootNode.Search(RootNode, nameSection);
 
-            var _question = question.Split('\n');            
+            var _question = question.Split('\n');
 
             int numberEditquestion = Convert.ToInt32(_question[0]);
 
@@ -87,7 +86,7 @@ namespace EpamTestConsole
             var sections = _sections.Split("/");
             var node = RootNode.Search(RootNode, sections[0]);
             node.AddChildNode(new TreeNode(new Section(sections[1])));
-        } 
+        }
 
         public void DeleteQuestion(string nameSection, string indexQuestion)
         {
@@ -95,6 +94,7 @@ namespace EpamTestConsole
             int i = Convert.ToInt32(indexQuestion);
             node.Section.Questions.RemoveAt(i);
         }
+
         public void DeleteSection(string nameSection)
         {
             rootNode.Delete(ref rootNode, nameSection);

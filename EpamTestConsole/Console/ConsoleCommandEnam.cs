@@ -1,4 +1,4 @@
 ﻿namespace EpamTestConsole
 {
-    enum Сommands { y, n, del }
+    enum Сommands { y, n }
 }
