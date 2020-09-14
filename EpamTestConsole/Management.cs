@@ -6,99 +6,79 @@ namespace EpamTestConsole
     [Serializable]
     public class Management
     {
-        private TreeNode rootNode = new TreeNode(new Section("root"));
-        public TreeNode RootNode
+        private TreeNode rootTest = new TreeNode(new Section("root"));
+        public TreeNode RootTest
         {
             get
             {
-                return rootNode;
+                return rootTest;
             }
             set
             {
-                rootNode = value;
+                rootTest = value;
             }
         }
 
         public void CreateNameTest(string nameTest)
         {
-            RootNode.Section.NameSection = nameTest;
+            RootTest.Section.NameSection = nameTest;
         }
 
         public void EditNameSection(string nameSection, string newNameSection)
         {
-            var node = RootNode.Search(RootNode, nameSection);
-            node.Section.NameSection = newNameSection;
+            var test = RootTest.Search(RootTest, nameSection);
+            test.Section.NameSection = newNameSection;
         }
 
-        public void CreateQuestion(string nameSection, string question)
+        public void CreateQuestion(string nameSection, Question question)
         {
-            var _question = question.Split('\n');
-            var node = RootNode.Search(RootNode, nameSection);
-
-            bool checkAnswer = false;
-            bool options = false;
-
-            if (_question[1] == "True")
-            {
-                checkAnswer = true;
-            }
-            if (_question[2] == "True")
-            {
-                options = true;
-            }
-            var answerOption = _question[4].Split('/').ToList();
-
-            node.Section.Questions.Add(new Question(_question[0], checkAnswer, options, _question[3], answerOption));
-
+            var test = RootTest.Search(RootTest, nameSection);
+            test.Section.Questions.Add(question);
         }
 
-        public void EditQuestion(string nameSection, string question)
+        public void EditQuestion(string nameSection, Question question, string indexQuestion)
         {
-            var node = RootNode.Search(RootNode, nameSection);
-
-            var _question = question.Split('\n');
-
-            int numberEditquestion = Convert.ToInt32(_question[0]);
-
-            bool checkAnswer = false;
-            bool options = false;
-
-            if (_question[2] == "True")
-            {
-                checkAnswer = true;
-            }
-            if (_question[3] == "True")
-            {
-                options = true;
-            }
-            if (string.IsNullOrEmpty(_question[5]))
-            {
-                node.Section.Questions[numberEditquestion] = new Question(_question[1], checkAnswer, options, _question[4], null);
-            }
-            var answerOption = _question[5].Split('/').ToList();
-
-            node.Section.Questions[numberEditquestion] = new Question(_question[1], checkAnswer, options, _question[4], answerOption);
-
+            var test = RootTest.Search(RootTest, nameSection);
+            int i = int.Parse(indexQuestion);
+            test.Section.Questions[i] = question;
         }
 
-        public void CreateSection(string _sections)
-        {
-            var sections = _sections.Split("/");
-            var node = RootNode.Search(RootNode, sections[0]);
-            node.AddChildNode(new TreeNode(new Section(sections[1])));
+        public void CreateSection(string  name, Section section)
+        {           
+            var test = RootTest.Search(RootTest, name);
+            test.AddChildNode(new TreeNode(section));
         }
 
         public void DeleteQuestion(string nameSection, string indexQuestion)
         {
-            var node = RootNode.Search(RootNode, nameSection);
+            var test = RootTest.Search(RootTest, nameSection);
             int i = Convert.ToInt32(indexQuestion);
-            node.Section.Questions.RemoveAt(i);
+            test.Section.Questions.RemoveAt(i);
         }
 
         public void DeleteSection(string nameSection)
         {
-            rootNode.Delete(ref rootNode, nameSection);
+            rootTest.Delete(ref rootTest, nameSection);
         }
 
+        public static void Save(Management management)
+        {
+            if (management == null)
+            {
+                return;
+            }
+            Console.WriteLine(ConsoleMenuConstant.Save + "?");
+            if (Console.ReadLine() == ConsoleСommand.y.ToString())
+            {
+                Console.WriteLine(ConsoleMenuConstant.EnterFileName);
+                string nameFile = Console.ReadLine();
+                TestRepository.SaveTest(management, nameFile);
+                Console.WriteLine(ConsoleMenuConstant.Saved);
+            }
+            else
+            {
+                Console.WriteLine(ConsoleMenuConstant.Cancel);
+            }
+        }
     }
 }

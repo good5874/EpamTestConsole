@@ -5,54 +5,62 @@ namespace EpamTestConsole
 {
     public class Menu
     {
-        private Management management = new Management();
-        private readonly CheckedQuestions checkingQuestions = new CheckedQuestions();
+        private Management management = new Management();        
         private readonly CheckedQuestionsRepository repository = new CheckedQuestionsRepository();
 
-        delegate void Metod(TreeNode root);
+        private delegate void Metod(TreeNode root);
 
         public void StartConsole()
         {            
-            Console.WriteLine("1. " + ConsoleMenuConstant.CreateTest);
-            Console.WriteLine("2. " + ConsoleMenuConstant.StartTest);
-            Console.WriteLine("3. " + ConsoleMenuConstant.EditTest);
-            Console.WriteLine("4. " + ConsoleMenuConstant.ShowHistory);
-
+            Console.WriteLine(ConsoleMenuConstant.CreateTest);
+            Console.WriteLine(ConsoleMenuConstant.StartTest);
+            Console.WriteLine(ConsoleMenuConstant.EditTest);
+            Console.WriteLine(ConsoleMenuConstant.ShowHistory);
+            
             Console.WriteLine(ConsoleMenuConstant.EnterNamber);
             switch (Console.ReadLine())
             {
                 case "1":
                     CreateTest();
-                    WalkTheTree(management.RootNode, AddSection);
-                    WalkTheTree(management.RootNode, AddQuestion);
-                    Save(management);
+                    WalkTheTree(management.RootTest , AddSection);
+                    WalkTheTree(management.RootTest , AddQuestion);
+                    Management.Save(management);
                     break;
-                case "2":
-                    OpenAndRunMethod(true);//start test
-                    
-                    repository.SaveCheckedQuestions(checkingQuestions.VerifiedQuestions);
+                case "2":                    
+                    if(!Open())
+                    {
+                        return;
+                    }
+
+                    WalkTheTree(management.RootTest , WriteSectionToConsole);
+                    repository.SaveListManagment(management);
                     break;
-                case "3":
-                    OpenAndRunMethod(false);//edit test
-                    Save(management);
+                case "3":                    
+                    if (!Open())
+                    {
+                        return;
+                    }
+
+                    EditTest();
+                    Management.Save(management);
                     break;
                 case "4":
                     WriteResultsHistoryToConsole();
                     break;
                 default:
-                    Console.WriteLine(ConsoleMenuConstant.Cancele);
+                    Console.WriteLine(ConsoleMenuConstant.Cancel);
                     break;
             }
         }
 
         private void CreateTest()
         {
-            Console.WriteLine("Введите тему теста");
+            Console.WriteLine(ConsoleMenuConstant.EnterNameTest);
             string nameTest = Console.ReadLine();
             management.CreateNameTest(nameTest);
         }
 
-        private void OpenAndRunMethod(bool StartOrEdit)
+        private bool Open()
         {
             Console.WriteLine(ConsoleMenuConstant.EnterFileName);
             string nameFile = Console.ReadLine();
@@ -61,34 +69,23 @@ namespace EpamTestConsole
             if (management == null)
             {
                 Console.WriteLine(ConsoleMenuConstant.FileNotFound);
+                return false;
             }
-            else
-            {
-                if (StartOrEdit)
-                {
-                    WalkTheTree(management.RootNode, WriteSectionToConsole);
-                }
-                else
-                {
-                    EditTest();
-                }
-            }
+            return true;
         }
 
         private void WriteSectionToConsole(TreeNode node)
-        {
-            List<string> answers = new List<string>();
-
+        {  
             Console.WriteLine(node.Section.NameSection);
 
             foreach (Question question in node.Section.Questions)
             {
-                string answer;
-                Console.WriteLine("Вопрос: " + question.TextQuestion);
+                string userAnswer;
+                Console.WriteLine(ConsoleMenuConstant.Question + question.TextQuestion);
                 if (question.Options)
                 {
                     int i = 0;
-                    Console.WriteLine("Варианты ответа:");
+                    Console.WriteLine(ConsoleMenuConstant.AnswerOptions);
                     foreach (var str in question.AnswerOptions)
                     {
                         Console.WriteLine($" {i})" + str);
@@ -98,25 +95,23 @@ namespace EpamTestConsole
                 }
                 else
                 {
-                    Console.WriteLine("Введите ответ:");
+                    Console.WriteLine(ConsoleMenuConstant.EnterAnswerOption);
                 }
-                answer = Console.ReadLine();
-                answers.Add(answer);
-            }
-
-            checkingQuestions.CheckingAllQuestions(node.Section, answers);
-
+                userAnswer = Console.ReadLine();
+                question.UserAnswer = userAnswer;
+                question.CheckingAnswer();
+            }            
         }
 
         public void EditTest()
-        {
-            Console.WriteLine("Введите тему или подтему, которую нужно редактировать:");
+        {     
+            Console.WriteLine(ConsoleMenuConstant.EnterNameTestEdit);
             string nameEdit = Console.ReadLine();
-            var node = management.RootNode.Search(management.RootNode, nameEdit);
+            var node = management.RootTest .Search(management.RootTest , nameEdit);
 
             if (node == null)
             {
-                Console.WriteLine("Тема не найдена");
+                Console.WriteLine(ConsoleMenuConstant.TestNotFound);
                 return;
             }
 
@@ -124,22 +119,23 @@ namespace EpamTestConsole
             string numberQuestionEdit;
             string numberQuestionDelete;
 
-            Console.WriteLine("1. Изменить название темы");
-            Console.WriteLine("2. Изменить вопрос");
-            Console.WriteLine("3. Добавить вопросы");
-            Console.WriteLine("4. Удалить вопрос");
-            Console.WriteLine("5. Добавить подтему");
-            Console.WriteLine("6. Удалить подтему");
-            Console.WriteLine("Введите нужную цифру:");
+            Console.WriteLine(ConsoleMenuConstant.EditNameTest);
+            Console.WriteLine(ConsoleMenuConstant.EditQuestion);
+            Console.WriteLine(ConsoleMenuConstant.AddQuestions);
+            Console.WriteLine(ConsoleMenuConstant.DeleteQuestion);
+            Console.WriteLine(ConsoleMenuConstant.AddSection);
+            Console.WriteLine(ConsoleMenuConstant.DeleteSection);
+
+            Console.WriteLine(ConsoleMenuConstant.EnterNamber);
             switch (Console.ReadLine())
             {
                 case "1":
-                    Console.WriteLine("Введите новое название:");
+                    Console.WriteLine(ConsoleMenuConstant.EnterNewName);
                     newNameSection = Console.ReadLine();
                     management.EditNameSection(nameEdit, newNameSection);
                     break;
                 case "2":
-                    Console.WriteLine("Введите номер вопроса:");
+                    Console.WriteLine(ConsoleMenuConstant.EnterNumberQuestion);
                     numberQuestionEdit = Console.ReadLine();
                     EditQuestion(nameEdit, numberQuestionEdit);
                     break;
@@ -147,7 +143,7 @@ namespace EpamTestConsole
                     AddQuestion(node);
                     break;
                 case "4":
-                    Console.WriteLine("Введите номер вопроса:");
+                    Console.WriteLine(ConsoleMenuConstant.EnterNumberQuestion);
                     numberQuestionDelete = Console.ReadLine();
                     management.DeleteQuestion(nameEdit, numberQuestionDelete);
                     break;
@@ -155,64 +151,67 @@ namespace EpamTestConsole
                     AddSection(node);
                     break;
                 case "6":
-                    Console.WriteLine("Удаление " + nameEdit);
+                    Console.WriteLine(ConsoleMenuConstant.Delete + nameEdit);
                     //удалит дочерние подтемы
                     management.DeleteSection(nameEdit);
                     break;
                 default:
-                    Console.WriteLine("Редактирование отменено");
+                    Console.WriteLine(ConsoleMenuConstant.Cancel);
                     break;
             }
         }
 
         private void EditQuestion(string nameSection, string indexQuestion)
         {
-
-            var node = management.RootNode.Search(management.RootNode, nameSection);
+            var node = management.RootTest.Search(management.RootTest, nameSection);
 
             Question question = node.Section.Questions[Convert.ToInt32(indexQuestion)];
 
-            string textQuestion = question.TextQuestion;
-            string answer = question.Answer;
-            string answerOptions = "";
+            string textQuestion= question.TextQuestion;
+            string answer = "";
+            List<string> answerOptions = null;
             bool checkAnswer = false;
             bool options = false;
 
-            Console.WriteLine("1. Изменить текст вопроса");
-            Console.WriteLine("2. Изменить ответ на вопрос");
-            Console.WriteLine("3. Добавить варианты ответов на вопросы");
-            Console.WriteLine("4. Удалить варианты ответов на вопросы");
+            Console.WriteLine(ConsoleMenuConstant.EditNameQuestion);
+            Console.WriteLine(ConsoleMenuConstant.EditAnswerQuestion);
+            Console.WriteLine(ConsoleMenuConstant.AddAnswerOption);
+            Console.WriteLine(ConsoleMenuConstant.DeleteAnswerOption);
+
             Console.WriteLine(ConsoleMenuConstant.EnterNamber);
             switch (Console.ReadLine())
             {
                 case "1":
-                    Console.WriteLine($"Введите новый вопрос:");
+                    Console.WriteLine(ConsoleMenuConstant.EnterNewTextQuestion);
                     textQuestion = Console.ReadLine();
                     break;
                 case "2":
-                    Console.WriteLine($"Введите ответ:");
+                    Console.WriteLine(ConsoleMenuConstant.EnterNewAnswerQuestion);
                     answer = Console.ReadLine();
                     break;
                 case "3":
-                    answerOptions = AddAnswerOtions(textQuestion);
+                    answerOptions = AddAnswerOptions(textQuestion);
                     break;
                 case "4":
-                    answerOptions = "";
+                    answerOptions = null;
                     break;
-
                 default:
-                    Console.WriteLine("Редактирование отменено");
-                    return;                    
+                    Console.WriteLine(ConsoleMenuConstant.Cancel);
+                    return;
             }
 
             if (answer != "")
+            {
                 checkAnswer = true;
+            }
 
-            if (answerOptions != "")
+            if (answerOptions != null)
+            {
                 options = true;
+            }
 
-            string _question = indexQuestion + "\n" + textQuestion + "\n" + checkAnswer + "\n" + options + "\n" + answer + "\n" + answerOptions;// доделать
-            management.EditQuestion(nameSection, _question);
+            question = new Question(textQuestion, checkAnswer, options, answer, answerOptions);            
+            management.EditQuestion(nameSection, question, indexQuestion);
         }
 
         private void WalkTheTree(TreeNode root, Metod metod)
@@ -225,7 +224,10 @@ namespace EpamTestConsole
                 TreeNode temp = queue.Dequeue();
                 metod(temp);
 
-                if (temp.ChildNodes == null) continue;
+                if (temp.ChildNodes == null)
+                {
+                    continue;
+                }
                 foreach (var node in temp.ChildNodes)
                 {
                     queue.Enqueue(node);
@@ -235,140 +237,140 @@ namespace EpamTestConsole
 
         private void AddQuestion(TreeNode node)
         {
-            string _question = "";
+            Console.WriteLine(ConsoleMenuConstant.AddQuestionTo + $"<{node.Section.NameSection}>?");
+            if (Console.ReadLine() == ConsoleСommand.y.ToString())
+            {    
+                string textQuestion;
+                string answer = "";
+                List<string> answerOptions = null;
+                bool checkAnswer = false;
+                bool options = false;
 
-            string question;
-            string answer = "";
-            string answerOptions = "";
-            bool checkAnswer = false;
-            bool options = false;
-
-            Console.WriteLine($"Добавить вопросы к {node.Section.NameSection}?");
-            if (Console.ReadLine() == Сommands.y.ToString())
-            {
                 for (int i = 0; ; i++)
                 {
                     if (i > 0)
                     {
                         Console.WriteLine(ConsoleMenuConstant.EnterY);
-                        if (Console.ReadLine() == Сommands.y.ToString())
+                        if (Console.ReadLine() == ConsoleСommand.y.ToString())
                         {
                             return;
                         }
                     }
 
-                    Console.WriteLine("Введите вопрос:");
-                    question = Console.ReadLine();
-                    Console.WriteLine("Введите ответ:");
+                    Console.WriteLine(ConsoleMenuConstant.EnterQuestion);
+                    textQuestion = Console.ReadLine();
+                    Console.WriteLine(ConsoleMenuConstant.EnterAnswer);
                     answer = Console.ReadLine();
 
-                    answerOptions = AddAnswerOtions(question);
+                    answerOptions = AddAnswerOptions(textQuestion);
 
-                    checkAnswer = false;
                     if (answer != "")
+                    {
                         checkAnswer = true;
+                    }
 
-                    options = false;
-                    if (answerOptions != "")
+                    if (answerOptions != null)
+                    {
                         options = true;
+                    }
 
-                    _question += question + "\n" + checkAnswer + "\n" + options + "\n" + answer + "\n" + answerOptions;
-                    management.CreateQuestion(node.Section.NameSection, _question);
+                    var question = new Question(textQuestion, checkAnswer, options, answer, answerOptions);
+                    management.CreateQuestion(node.Section.NameSection, question);
                 }
             }
             else
             {
-                Console.WriteLine($"Добавление вопросов к {node.Section.NameSection} отменено");
+                Console.WriteLine(ConsoleMenuConstant.Cancel);
             }
         }
 
-        private string AddAnswerOtions(string nameQuestion)
+        private List<string> AddAnswerOptions(string nameQuestion)
         {
-            string answerOptions = "";
+            List<string> answerOptions = null;
 
-            Console.WriteLine($"Добавить к <{nameQuestion}> варианты ответов?");
-            if (Console.ReadLine() == Сommands.y.ToString())
+            Console.WriteLine(ConsoleMenuConstant.AddAnswerOptionTo + $"<{nameQuestion}>?");
+            if (Console.ReadLine() == ConsoleСommand.y.ToString())
             {
                 Console.WriteLine(ConsoleMenuConstant.EnterN);
+
+                answerOptions = new List<string>();
 
                 for (; ; )
                 {
                     string tmp = Console.ReadLine();
-                    if (tmp == Сommands.n.ToString())
+                    if (tmp == ConsoleСommand.n.ToString())
                     {
                         break;
                     }
                     else
                     {
-                        answerOptions += tmp + "/";
+                        answerOptions.Add(tmp);
                     }
-                }
-                answerOptions = answerOptions.Trim('/');
+                }                
             }
             return answerOptions;
         }
 
         private void AddSection(TreeNode node)
-        {
-            string text = "";
-            Console.WriteLine($"Добавить потемы к {node.Section.NameSection} ?");
-            if (Console.ReadLine() == Сommands.y.ToString())
+        {            
+            Console.WriteLine(ConsoleMenuConstant.AddSectionTo + $"<{node.Section.NameSection}>?");
+            if (Console.ReadLine() == ConsoleСommand.y.ToString())
             {
-                Console.WriteLine($"Сколько подтем добавить к {node.Section.NameSection} подтем?");
+                Console.WriteLine(ConsoleMenuConstant.HowManySectionsToAdd + $"<{node.Section.NameSection}>?");
 
                 string strsectionCount = Console.ReadLine();
                 bool isNum = int.TryParse(strsectionCount, out  int intsectionCount);
                 if (isNum)
                 {
-                    Console.WriteLine("Введите название подтем:");
+                    Console.WriteLine(ConsoleMenuConstant.EnterNameSections);
                     for (int i = 1; i < intsectionCount + 1; i++)
                     {
-                        Console.WriteLine("Подтема №" + i);
-                        string nameSection = Console.ReadLine();
-                        text = node.Section.NameSection + "/" + nameSection;
-                        management.CreateSection(text);
+                        Console.WriteLine(ConsoleMenuConstant.Sections + i);
+                        string nameSection = Console.ReadLine();                       
+                        management.CreateSection(node.Section.NameSection, new Section(nameSection));
                     }
                 }
                 else
                 {
-                    Console.WriteLine("Ввели не число");
-                    Console.WriteLine($"Добавление подтем к {node.Section.NameSection} отменено");
+                    Console.WriteLine(ConsoleMenuConstant.NotNamber);
+                    Console.WriteLine(ConsoleMenuConstant.Cancel);
                 }
             }
             else
             {
-                Console.WriteLine($"Добавление подтем к {node.Section.NameSection} отменено");
+                Console.WriteLine(ConsoleMenuConstant.Cancel);
             }
         }
 
         private void WriteResultToConsole()
         {
-            foreach (List<CheckedQuestion> list in repository.GetChekedQuestions())
+            foreach (Management management in repository.GetListManagements())
             {
-                Console.WriteLine("Название теста: " + list[0].NameSection);
-                foreach (CheckedQuestion item in list)
-                {
-                    Console.WriteLine(item.NameSection + "/" + item.TextQuestion + "/" + item.Answer + "/" + item.Result);
-                }
+                Console.WriteLine(ConsoleMenuConstant.Sections + management.RootTest.Section.NameSection);
+                WalkTheTree(management.RootTest, WriteResult);               
+            }
+        }
+        private void WriteResult(TreeNode test)
+        {
+            foreach (Question question in test.Section.Questions)
+            {
+                Console.WriteLine(question.ToString());
             }
         }
 
         private void WriteResultToConsole(string nameTest)
         {
-            foreach (List<CheckedQuestion> list in repository.GetChekedQuestions(nameTest))
+            foreach (Management management in repository.GetListManagements(nameTest))
             {
-                Console.WriteLine("Название теста: " + list[0].NameSection);
-                foreach (CheckedQuestion item in list)
-                {
-                    Console.WriteLine(item.NameSection + "/" + item.TextQuestion + "/" + item.Answer + "/" + item.Result);
-                }
+                Console.WriteLine(ConsoleMenuConstant.Sections + management.RootTest.Section.NameSection);
+                WalkTheTree(management.RootTest, WriteResult);
             }
         }
 
         private void WriteResultsHistoryToConsole()
         {
-            Console.WriteLine("1. " + "Получить историю всех пройденых тестов");
-            Console.WriteLine("2. " + "Получить историю определенного теста");
+            Console.WriteLine(ConsoleMenuConstant.GetHistory);
+            Console.WriteLine(ConsoleMenuConstant.GetTestHistory);
 
             Console.WriteLine(ConsoleMenuConstant.EnterNamber);
             switch (Console.ReadLine())
@@ -381,29 +383,9 @@ namespace EpamTestConsole
                     WriteResultToConsole(Console.ReadLine());
                     break;
                 default:
-                    Console.WriteLine(ConsoleMenuConstant.Cancele);
+                    Console.WriteLine(ConsoleMenuConstant.Cancel);
                     break;
             }
-        }
-
-        private static void Save(Management management)
-        {
-            if (management == null)
-            {
-                return;
-            }
-            Console.WriteLine("Сохранить?");
-            if (Console.ReadLine() == Сommands.y.ToString())
-            {
-                Console.WriteLine(ConsoleMenuConstant.EnterFileName);
-                string nameFile = Console.ReadLine();
-                TestRepository.SaveTest(management, nameFile);
-                Console.WriteLine("Сохранено");
-            }
-            else
-            {
-                Console.WriteLine("Сохранение отменено");
-            }
-        }
+        }      
     }
 }

@@ -9,7 +9,7 @@ namespace EpamTestConsole
     [Serializable]
     public class CheckedQuestionsRepository
     {
-        private List<List<CheckedQuestion>> ListCheckedQuestions;
+        private List<Management> ListManagment;
 
         private string nameFile = "CheckedQuestionsRepository";
 
@@ -17,19 +17,19 @@ namespace EpamTestConsole
         {
             if (!File.Exists(nameFile + ".dat"))
             {
-                ListCheckedQuestions = new List<List<CheckedQuestion>>();
+                ListManagment = new List<Management>();
             }
             else
             {
-                ListCheckedQuestions = OpenCheckedQuestions();                
+                ListManagment = OpenListManagment();                
             }
         }
 
-        public void SaveCheckedQuestions(List<CheckedQuestion> checkedQuestions)
+        public void SaveListManagment(Management management)
         {
-            if (checkedQuestions.Count != 0)
+            if (management != null)
             {
-                ListCheckedQuestions.Add(checkedQuestions);
+                ListManagment.Add(management);
             }
             else
             {
@@ -39,29 +39,29 @@ namespace EpamTestConsole
 
             using (FileStream fs = new FileStream($"{nameFile}.dat", FileMode.OpenOrCreate))
             {
-                formatter.Serialize(fs, ListCheckedQuestions);
+                formatter.Serialize(fs, ListManagment);
             }
         }
 
-        public List<List<CheckedQuestion>> OpenCheckedQuestions()
+        public List<Management> OpenListManagment()
         {
             BinaryFormatter formatter = new BinaryFormatter();
 
             using (FileStream fs = new FileStream($"{nameFile}.dat", FileMode.OpenOrCreate))
             {
-                List<List<CheckedQuestion>> deserilizeListCheckedQuestions = (List<List<CheckedQuestion>>)formatter.Deserialize(fs);
-                return deserilizeListCheckedQuestions;
+                List<Management> deserilizeListManagment = (List<Management>)formatter.Deserialize(fs);
+                return deserilizeListManagment;
             }
         }
 
-        public List<List<CheckedQuestion>> GetChekedQuestions()
+        public List<Management> GetListManagements()
         {
-            return ListCheckedQuestions;
+            return ListManagment;
         }
 
-        public List<List<CheckedQuestion>> GetChekedQuestions(string nametest)
+        public List<Management> GetListManagements(string nametest)
         {
-            return ListCheckedQuestions.Where(x => x[0].NameSection == nametest).ToList();             
+            return ListManagment.Where(x => x.RootTest.Section.NameSection == nametest).ToList();             
         }
     }
 }
