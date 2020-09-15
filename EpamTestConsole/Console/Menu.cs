@@ -31,7 +31,7 @@ namespace EpamTestConsole
                     {
                         return;
                     }
-
+                                        
                     WalkTheTree(management.RootTest , WriteSectionToConsole);
                     repository.SaveListManagment(management);
                     break;
@@ -95,11 +95,12 @@ namespace EpamTestConsole
                 }
                 else
                 {
-                    Console.WriteLine(ConsoleMenuConstant.EnterAnswerOption);
+                    Console.WriteLine(ConsoleMenuConstant.EnterAnswer);
                 }
                 userAnswer = Console.ReadLine();
                 question.UserAnswer = userAnswer;
                 question.CheckingAnswer();
+                Console.WriteLine(question.ToString());
             }            
         }
 
@@ -350,6 +351,7 @@ namespace EpamTestConsole
                 WalkTheTree(management.RootTest, WriteResult);               
             }
         }
+
         private void WriteResult(TreeNode test)
         {
             foreach (Question question in test.Section.Questions)
