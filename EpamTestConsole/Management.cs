@@ -7,6 +7,8 @@ namespace EpamTestConsole
     public class Management
     {
         private TreeNode rootTest = new TreeNode(new Section("root"));
+        public bool CheckAfterInput = false;
+
         public TreeNode RootTest
         {
             get

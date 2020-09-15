@@ -58,6 +58,16 @@ namespace EpamTestConsole
             Console.WriteLine(ConsoleMenuConstant.EnterNameTest);
             string nameTest = Console.ReadLine();
             management.CreateNameTest(nameTest);
+
+            Console.WriteLine("Проверять ответ сразу  после ввода?");            
+            if (Console.ReadLine() == ConsoleСommand.y.ToString())
+            {
+                management.CheckAfterInput = true;                
+            }
+            else
+            {
+                management.CheckAfterInput = false;
+            }
         }
 
         private bool Open()
@@ -100,7 +110,11 @@ namespace EpamTestConsole
                 userAnswer = Console.ReadLine();
                 question.UserAnswer = userAnswer;
                 question.CheckingAnswer();
-                Console.WriteLine(question.ToString());
+
+                if (management.CheckAfterInput)
+                {
+                    Console.WriteLine(question.ToString());
+                }
             }            
         }
 
