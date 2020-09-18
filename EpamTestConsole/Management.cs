@@ -84,5 +84,11 @@ namespace EpamTestConsole
                 Console.WriteLine(ConsoleMenuConstant.Cancel);
             }
         }
+
+        public string GetTrueAnswers()
+        {
+            
+            return null;
+        }
     }
 }

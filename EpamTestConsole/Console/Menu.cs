@@ -8,7 +8,7 @@ namespace EpamTestConsole
         private Management management = new Management();        
         private readonly CheckedQuestionsRepository repository = new CheckedQuestionsRepository();
 
-        private delegate void Metod(TreeNode root);
+        public delegate void Metod(TreeNode root);
         
         public void StartConsole()
         {            
@@ -22,8 +22,8 @@ namespace EpamTestConsole
             {
                 case "1":
                     CreateTest();
-                    WalkTheTree(management.RootTest , AddSection);
-                    WalkTheTree(management.RootTest , AddQuestion);
+                    management.RootTest.WalkTheTree(management.RootTest , AddSection);
+                    management.RootTest.WalkTheTree(management.RootTest , AddQuestion);
                     Management.Save(management);
                     break;
                 case "2":                    
@@ -34,7 +34,7 @@ namespace EpamTestConsole
 
                     management.ConsoleTitileTimer.StartTimer();
 
-                    WalkTheTree(management.RootTest, WriteSectionToConsole);
+                    management.RootTest.WalkTheTree(management.RootTest, WriteSectionToConsole);
                     repository.SaveListManagment(management);
                     break;
                 case "3":                    
@@ -107,7 +107,7 @@ namespace EpamTestConsole
                 {
                     question.UserAnswer = "Время вышло";
                     question.Result = "Время вышло";
-                    return;
+                    continue;
                 }
                 else
                 {
@@ -123,6 +123,10 @@ namespace EpamTestConsole
                 }
 
             }            
+        }
+        private void Ex()
+        {
+            throw new Exception("Время вышло");
         }
 
         public void EditTest()
@@ -239,28 +243,7 @@ namespace EpamTestConsole
 
             question = new Question(textQuestion, checkAnswer, options, answer, answerOptions);            
             management.EditQuestion(nameSection, question, indexQuestion);
-        }
-
-        private void WalkTheTree(TreeNode root, Metod metod)
-        {
-            Queue<TreeNode> queue = new Queue<TreeNode>();
-            queue.Enqueue(root);
-
-            while (queue.Count != 0)
-            {
-                TreeNode temp = queue.Dequeue();
-                metod(temp);                
-
-                if (temp.ChildNodes == null)
-                {
-                    continue;
-                }
-                foreach (var node in temp.ChildNodes)
-                {
-                    queue.Enqueue(node);
-                }
-            }
-        }
+        }        
 
         private void AddQuestion(TreeNode node)
         {
@@ -374,7 +357,7 @@ namespace EpamTestConsole
             foreach (Management management in repository.GetListManagements())
             {
                 Console.WriteLine(ConsoleMenuConstant.Sections + management.RootTest.Section.NameSection);
-                WalkTheTree(management.RootTest, WriteResult);               
+                management.RootTest.WalkTheTree(management.RootTest, WriteResult);               
             }
         }
 
@@ -391,7 +374,7 @@ namespace EpamTestConsole
             foreach (Management management in repository.GetListManagements(nameTest))
             {
                 Console.WriteLine(ConsoleMenuConstant.Sections + management.RootTest.Section.NameSection);
-                WalkTheTree(management.RootTest, WriteResult);
+                management.RootTest.WalkTheTree(management.RootTest, WriteResult);
             }
         }
 

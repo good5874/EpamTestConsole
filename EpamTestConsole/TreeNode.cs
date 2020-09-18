@@ -7,7 +7,8 @@ namespace EpamTestConsole
 {
     [Serializable]
     public class TreeNode
-    {        
+    {
+        public delegate void Metod(TreeNode root);        
         public TreeNode(Section section)
         {
             Section = section;               
@@ -80,6 +81,27 @@ namespace EpamTestConsole
             }
 
             return null;
-        }
+        }      
+
+        public void WalkTheTree(TreeNode root, Metod metod)
+        {
+            Queue<TreeNode> queue = new Queue<TreeNode>();
+            queue.Enqueue(root);
+
+            while (queue.Count != 0)
+            {
+                TreeNode temp = queue.Dequeue();
+                metod(temp);
+
+                if (temp.ChildNodes == null)
+                {
+                    continue;
+                }
+                foreach (var node in temp.ChildNodes)
+                {
+                    queue.Enqueue(node);
+                }
+            }
+        }       
     }
 }
