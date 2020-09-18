@@ -9,7 +9,7 @@ namespace EpamTestConsole
         private readonly CheckedQuestionsRepository repository = new CheckedQuestionsRepository();
 
         private delegate void Metod(TreeNode root);
-
+        
         public void StartConsole()
         {            
             Console.WriteLine(ConsoleMenuConstant.CreateTest);
@@ -31,8 +31,10 @@ namespace EpamTestConsole
                     {
                         return;
                     }
-                                        
-                    WalkTheTree(management.RootTest , WriteSectionToConsole);
+
+                    management.ConsoleTitileTimer.StartTimer();
+
+                    WalkTheTree(management.RootTest, WriteSectionToConsole);
                     repository.SaveListManagment(management);
                     break;
                 case "3":                    
@@ -59,15 +61,7 @@ namespace EpamTestConsole
             string nameTest = Console.ReadLine();
             management.CreateNameTest(nameTest);
 
-            Console.WriteLine("Проверять ответ сразу  после ввода?");            
-            if (Console.ReadLine() == ConsoleСommand.y.ToString())
-            {
-                management.CheckAfterInput = true;                
-            }
-            else
-            {
-                management.CheckAfterInput = false;
-            }
+            VerificationOptions(management);
         }
 
         private bool Open()
@@ -107,7 +101,19 @@ namespace EpamTestConsole
                 {
                     Console.WriteLine(ConsoleMenuConstant.EnterAnswer);
                 }
-                userAnswer = Console.ReadLine();
+                
+
+                if (management.ConsoleTitileTimer.Stop)
+                {
+                    question.UserAnswer = "Время вышло";
+                    question.Result = "Время вышло";
+                    return;
+                }
+                else
+                {
+                    userAnswer = Console.ReadLine();
+                }
+
                 question.UserAnswer = userAnswer;
                 question.CheckingAnswer();
 
@@ -115,6 +121,7 @@ namespace EpamTestConsole
                 {
                     Console.WriteLine(question.ToString());
                 }
+
             }            
         }
 
@@ -140,6 +147,7 @@ namespace EpamTestConsole
             Console.WriteLine(ConsoleMenuConstant.DeleteQuestion);
             Console.WriteLine(ConsoleMenuConstant.AddSection);
             Console.WriteLine(ConsoleMenuConstant.DeleteSection);
+            Console.WriteLine(ConsoleMenuConstant.EditVerificationOptions);
 
             Console.WriteLine(ConsoleMenuConstant.EnterNamber);
             switch (Console.ReadLine())
@@ -170,6 +178,10 @@ namespace EpamTestConsole
                     //удалит дочерние подтемы
                     management.DeleteSection(nameEdit);
                     break;
+                case "7":
+                    VerificationOptions(management);
+                    break;
+
                 default:
                     Console.WriteLine(ConsoleMenuConstant.Cancel);
                     break;
@@ -237,7 +249,7 @@ namespace EpamTestConsole
             while (queue.Count != 0)
             {
                 TreeNode temp = queue.Dequeue();
-                metod(temp);
+                metod(temp);                
 
                 if (temp.ChildNodes == null)
                 {
@@ -403,5 +415,18 @@ namespace EpamTestConsole
                     break;
             }
         }      
+
+        private void VerificationOptions(Management management)
+        {
+            Console.WriteLine(ConsoleMenuConstant.CheckAnswerAfterInput);
+            if (Console.ReadLine() == ConsoleСommand.y.ToString())
+            {
+                management.CheckAfterInput = true;
+            }
+            else
+            {
+                management.CheckAfterInput = false;
+            }
+        }
     }
 }

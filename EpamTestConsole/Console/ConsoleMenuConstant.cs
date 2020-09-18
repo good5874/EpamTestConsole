@@ -22,6 +22,9 @@
         public const string DeleteQuestion = "4. Удалить вопрос";
         public const string AddSection = "5. Добавить подтему";
         public const string DeleteSection = "6. Удалить подтему";
+        public const string EditVerificationOptions = "7. Изменить как проверять результаты";
+        
+        public const string CheckAnswerAfterInput = "Проверять после ввода ответа?";
 
         public const string EnterNewName = "Введите новое название: ";
         public const string EnterNumberQuestion = "Введите номер вопроса: ";

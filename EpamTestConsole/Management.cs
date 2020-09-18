@@ -9,6 +9,8 @@ namespace EpamTestConsole
         private TreeNode rootTest = new TreeNode(new Section("root"));
         public bool CheckAfterInput = false;
 
+        public ConsoleTitileTimer ConsoleTitileTimer = new ConsoleTitileTimer();
+
         public TreeNode RootTest
         {
             get
