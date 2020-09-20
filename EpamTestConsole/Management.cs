@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace EpamTestConsole
@@ -7,288 +6,83 @@ namespace EpamTestConsole
     [Serializable]
     public class Management
     {
-        TreeNode RootNode { get; set; } = new TreeNode(new Section("root"));
+        private TreeNode rootTest = new TreeNode(new Section("root"));
+        public bool CheckAfterInput = false;
 
-        public void CreateTest(string nameTest)
+        public ConsoleTitileTimer ConsoleTitileTimer = new ConsoleTitileTimer();
+
+        public TreeNode RootTest
         {
-            RootNode.Section.NameSection = nameTest;
-            AddSection(RootNode);
-            AddQuestion(RootNode);           
-        }
-        public void EditTest()
-        {
-
-            Console.WriteLine("Введите тему или подтему, которую нужно редактировать:");
-            string name = Console.ReadLine();
-            TreeNode node =RootNode.Search(RootNode, name);
-            Console.WriteLine("1. Изменить название темы");
-            Console.WriteLine("2. Изменить вопрос");
-            Console.WriteLine("3. Добавить вопросы");
-            Console.WriteLine("4. Удалить вопрос");
-            Console.WriteLine("5. Добавить подтему");
-            Console.WriteLine("6. Удалить подтему");
-            Console.WriteLine("Введите нужную цифру:");
-            switch (Console.ReadLine())
+            get
             {
-                case "1":
-                    Console.WriteLine("Введите новое название:");
-                    node.Section.NameSection = Console.ReadLine();
-                    break;
-                case "2":
-                    Console.WriteLine("Введите номер вопроса:");
-                    EditQuestion(node.Section, Console.ReadLine());
-                    break;
-                case "3":
-                    AddQuestion(node,true);
-                    break;
-                case "4":
-                    Console.WriteLine("Введите номер вопроса:");
-                    DeleteQuestion(node.Section, Console.ReadLine());
-                    break;
-                case "5":
-                    AddSection(node);
-                    break;
-                case "6":
-                    Console.WriteLine("Введите название темы:");
-                    node.Delete(ref node, Console.ReadLine());//удалит дочерние подтемы
-                    break;
-                default:
-                    Console.WriteLine("Редактирование отменено");
-                    break;
-            }            
-        }
-        public void StartTest()
-        {  
-            Queue<TreeNode> q = new Queue<TreeNode>();
-            q.Enqueue(RootNode);
-
-            while (q.Count != 0)
+                return rootTest;
+            }
+            set
             {
-                TreeNode temp = q.Dequeue();
-                WriteSectionToConsole(temp.Section);
-                if (temp.ChildNodes == null) continue;
-                foreach (var node in temp.ChildNodes)
-                {                    
-                    q.Enqueue(node);
-                }
-            }            
-        }
-        private void AddSection(TreeNode root)
-        {
-            Queue<TreeNode> q = new Queue<TreeNode>();
-            q.Enqueue(root);
-
-            while (q.Count != 0)
-            {
-                TreeNode temp = q.Dequeue();
-
-                Console.WriteLine($"Добавить потемы к {temp.Section.NameSection} ?");
-                if (Console.ReadLine() == Сommands.y.ToString())
-                {
-                    Console.WriteLine($"Сколько подтем добавить к {temp.Section.NameSection} подтем?");
-                    int sectionCount = Convert.ToInt32(Console.ReadLine());
-                    Console.WriteLine("Введите название подтем:");
-                    for (int i = 0; i < sectionCount; i++)
-                    {
-                        string nameSection = Console.ReadLine();
-                        temp.AddChildNode(new TreeNode(new Section(nameSection)));
-                    }
-                }
-                else
-                {
-                    Console.WriteLine($"Добавление подтем к {temp.Section.NameSection} отменено");
-                }
-
-                if (temp.ChildNodes == null) continue;
-                foreach (var node in temp.ChildNodes)
-                {                   
-                    q.Enqueue(node);
-                }
-            }           
-        }
-        private void AddQuestion(TreeNode root, bool edit = false)
-        {
-            Queue<TreeNode> q = new Queue<TreeNode>();
-            q.Enqueue(root);
-            int i = 0;
-
-            List<Question> tmpQuestions=null;
-            while (q.Count != 0)
-            {
-                if(edit)
-                {
-                    if (i == 0)
-                    {
-                        tmpQuestions = root.Section.Questions;
-                    }
-                    if (i>0)
-                    {
-                        root.Section.Questions = root.Section.Questions.Concat(tmpQuestions).ToList();
-                        return;
-                    }
-                    i++;
-                }
-                
-                TreeNode temp = q.Dequeue();
-
-                Console.WriteLine($"Добавить вопросы к {temp.Section.NameSection}?");
-                if (Console.ReadLine() == Сommands.y.ToString())
-                {
-                    temp.Section.Questions = CreateQuestions(temp.Section);
-                }
-                else
-                {
-                    Console.WriteLine($"Добавление вопросов к {temp.Section.NameSection} отменено");
-                }
-
-                if (temp.ChildNodes == null) continue;
-                foreach (var node in temp.ChildNodes)
-                {
-                    q.Enqueue(node);
-                }
+                rootTest = value;
             }
         }
-        private List<Question> CreateQuestions(Section section)
+
+        public void CreateNameTest(string nameTest)
         {
-            List<Question> Questions = new List<Question>();
-
-            string question;
-            string answer;
-            List<string> answerOptions= null;
-            bool checkAnswer = false;
-            bool options = false;
-
-            for (int i = 0; ; i++)
-            {
-                if (i > 0)
-                {
-                    Console.WriteLine("Чтобы закончить добавление вопросов введите y");
-                    if (Console.ReadLine() == Сommands.y.ToString())
-                    {
-                        return Questions;
-                    }
-                }
-
-                Console.WriteLine("Введите вопрос:");
-                question = Console.ReadLine();
-                Console.WriteLine("Введите ответ:");
-                answer = Console.ReadLine();  
-
-                checkAnswer = false;
-                if (answer != null && answer != "")
-                    checkAnswer = true;
-
-                options = false;
-                if (answerOptions != null)
-                    options = true;
-                Questions.Add(new Question(question, checkAnswer, options, answer, answerOptions));
-                answerOptions = AddAnswerOption(Questions.Last());
-            }
+            RootTest.Section.NameSection = nameTest;
         }
-        private void EditQuestion(Section section, string indexQuestion)
+
+        public void EditNameSection(string nameSection, string newNameSection)
         {
-            Question question = section.Questions[Convert.ToInt32(indexQuestion)];
-            Console.WriteLine($"Изменить вопрос <{question.TextQuestion}>?");
-            if (Console.ReadLine() == Сommands.y.ToString())
-            {
-                Console.WriteLine($"Введите <y> чтобы изменить вопрос");
-                if (Console.ReadLine() == Сommands.y.ToString())
-                {
-                    Console.WriteLine($"Введите вопрос:");
-                    question.TextQuestion = Console.ReadLine();
-                }
-                Console.WriteLine($"Введите <y> чтобы изменить ответ");
-                if (Console.ReadLine() == Сommands.y.ToString())
-                {
-                    Console.WriteLine($"Введите ответ:");
-                    question.Answer = Console.ReadLine();
-
-                    if (question.Answer != null)
-                    {
-                        question.Options = true;
-                    }
-                    else
-                    {
-                        question.Options = false;
-                    }
-                }
-                Console.WriteLine($"Добавить или изменить нажмите <y>, удалить варианты ответов введите <del>");
-                if (Console.ReadLine() == Сommands.y.ToString())
-                {
-                    question.AnswerOptions = AddAnswerOption(question);
-                    
-                    if (question.Answer != null && question.Answer != "")
-                        question.CheckAnswer = true;                   
-                    
-                }
-                else if (Console.ReadLine() == Сommands.del.ToString())
-                {
-                    question.AnswerOptions = null;
-                    question.Options = false;
-                }
-
-            }
-            section.Questions[Convert.ToInt32(indexQuestion)] = question;
+            var test = RootTest.Search(RootTest, nameSection);
+            test.Section.NameSection = newNameSection;
         }
-        private List<string> AddAnswerOption(Question question)
+
+        public void CreateQuestion(string nameSection, Question question)
         {
-            List<string> answerOptions = null;
-
-            Console.WriteLine($"Добавить к <{question.TextQuestion}> варианты ответов?");
-
-            if (Console.ReadLine() == Сommands.y.ToString())
-            {
-                answerOptions = new List<string>();
-                Console.WriteLine("Введите n когда добавили достаточно вариантов ответов.");
-                answerOptions = new List<string>();
-                for (; ; )
-                {
-                    string tmp = Console.ReadLine();
-                    if (tmp == Сommands.n.ToString())
-                    {
-                        break;
-                    }
-                    else
-                    {
-                        answerOptions.Add(tmp);
-                    }
-                }
-            }
-            return answerOptions;
+            var test = RootTest.Search(RootTest, nameSection);
+            test.Section.Questions.Add(question);
         }
-        private void DeleteQuestion(Section section, string indexQuestion)
+
+        public void EditQuestion(string nameSection, Question question, string indexQuestion)
         {
+            var test = RootTest.Search(RootTest, nameSection);
+            int i = int.Parse(indexQuestion);
+            test.Section.Questions[i] = question;
+        }
+
+        public void CreateSection(string  name, Section section)
+        {           
+            var test = RootTest.Search(RootTest, name);
+            test.AddChildNode(new TreeNode(section));
+        }
+
+        public void DeleteQuestion(string nameSection, string indexQuestion)
+        {
+            var test = RootTest.Search(RootTest, nameSection);
             int i = Convert.ToInt32(indexQuestion);
-            Console.WriteLine($"Вопрос удалён <{section.Questions[i].TextQuestion}>");
-            section.Questions.RemoveAt(i);
+            test.Section.Questions.RemoveAt(i);
         }
-        private void WriteSectionToConsole(Section section)
+
+        public void DeleteSection(string nameSection)
         {
-            List<string> answers = new List<string>();
+            rootTest.Delete(ref rootTest, nameSection);
+        }
 
-            Console.WriteLine(section.NameSection);
-
-            foreach (Question question in section.Questions)
+        public static void Save(Management management)
+        {
+            if (management == null)
             {
-                string answer;
-                Console.WriteLine("Вопрос: " + question.TextQuestion);
-                if (question.Options)
-                {
-                    int i = 1;
-                    Console.WriteLine("Варианты ответа:");
-                    foreach (var str in question.AnswerOptions)
-                    {
-                        Console.WriteLine($" {i})" + str);
-                        i++;
-                    }
-                    Console.WriteLine("Введите нужный вариант ответа:");
-                }
-                else Console.WriteLine("Введите ответ:");
-                answer = Console.ReadLine();
-                answers.Add(answer);
+                return;
             }
-
-        }//проверить ответы
-
+            Console.WriteLine(ConsoleMenuConstant.Save + "?");
+            if (Console.ReadLine() == ConsoleСommand.y.ToString())
+            {
+                Console.WriteLine(ConsoleMenuConstant.EnterFileName);
+                string nameFile = Console.ReadLine();
+                TestRepository.SaveTest(management, nameFile);
+                Console.WriteLine(ConsoleMenuConstant.Saved);
+            }
+            else
+            {
+                Console.WriteLine(ConsoleMenuConstant.Cancel);
+            }
+        }
     }
 }
