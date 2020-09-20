@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace EpamTestConsole
 {
@@ -83,7 +84,7 @@ namespace EpamTestConsole
             return null;
         }      
 
-        public void WalkTheTree(TreeNode root, Metod metod)
+        public static void WalkTheTree(TreeNode root, Metod metod)
         {
             Queue<TreeNode> queue = new Queue<TreeNode>();
             queue.Enqueue(root);
@@ -102,6 +103,26 @@ namespace EpamTestConsole
                     queue.Enqueue(node);
                 }
             }
-        }       
+        }
+        public static void WalkTheTree(TreeNode root, Metod metod, CancellationToken token)
+        {
+            Queue<TreeNode> queue = new Queue<TreeNode>();
+            queue.Enqueue(root);
+
+            while (queue.Count != 0)
+            {
+                TreeNode temp = queue.Dequeue();
+                metod(temp);
+
+                if (temp.ChildNodes == null)
+                {
+                    continue;
+                }
+                foreach (var node in temp.ChildNodes)
+                {
+                    queue.Enqueue(node);
+                }
+            }
+        }
     }
 }

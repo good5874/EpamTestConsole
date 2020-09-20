@@ -84,7 +84,8 @@ namespace EpamTestConsole
             if (Options)
             {
                 if (UserAnswer != ConsoleMenuConstant.IncorrectInput
-                    && UserAnswer != ConsoleMenuConstant.TimeIsOver)
+                    && UserAnswer != ConsoleMenuConstant.TimeIsOver
+                    && UserAnswer != null)
                 {
                     int i = int.Parse(UserAnswer);
                     userAnswer = AnswerOptions[i];

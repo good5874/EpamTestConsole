@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 
 namespace EpamTestConsole
 {
@@ -22,18 +24,25 @@ namespace EpamTestConsole
             {
                 case "1":
                     CreateTest();
-                    management.RootTest.WalkTheTree(management.RootTest, AddSection);
-                    management.RootTest.WalkTheTree(management.RootTest, AddQuestion);
+                    TreeNode.WalkTheTree(management.RootTest, AddSection);
+                    TreeNode.WalkTheTree(management.RootTest, AddQuestion);
                     Management.Save(management);
                     break;
                 case "2":
                     if (!Open())
                     {
                         return;
+                    }
+                    if (management.ConsoleTitileTimer != null)
+                    {
+                        management.ConsoleTitileTimer.StartTimer(management.RootTest, WriteSectionToConsole);
+                        Thread.Sleep(11000);
+                        TimeIsOver(management.RootTest);
+                    }
+                    else
+                    {
+                        TreeNode.WalkTheTree(management.RootTest, WriteSectionToConsole);
                     }                    
-                    management.ConsoleTitileTimer.StartTimer();
-
-                    management.RootTest.WalkTheTree(management.RootTest, WriteSectionToConsole);
                     repository.SaveListManagment(management);
                     break;
                 case "3":
@@ -102,33 +111,23 @@ namespace EpamTestConsole
                     Console.WriteLine(ConsoleMenuConstant.EnterAnswer);
                 }
 
-
-                if (management.ConsoleTitileTimer.Stop)
+                if (question.Options)
                 {
-                    question.UserAnswer = ConsoleMenuConstant.TimeIsOver;
-                    question.Result = ConsoleMenuConstant.TimeIsOver;
-                    continue;
-                }
-                else
-                {
-                    if (question.Options)
+                    string temp = Console.ReadLine();
+                    bool isNum = int.TryParse(temp, out int number);
+                    if (question.AnswerOptions.Count > number && number >= 0
+                        && isNum)
                     {
-                        string temp = Console.ReadLine();
-                        bool isNum = int.TryParse(temp, out int number);
-                        if (question.AnswerOptions.Count > number && number >= 0
-                            && isNum)
-                        {
-                            userAnswer = number.ToString();
-                        }
-                        else
-                        {
-                            userAnswer = ConsoleMenuConstant.IncorrectInput;
-                        }
+                        userAnswer = number.ToString();
                     }
                     else
                     {
-                        userAnswer = Console.ReadLine();
+                        userAnswer = ConsoleMenuConstant.IncorrectInput;
                     }
+                }
+                else
+                {
+                    userAnswer = Console.ReadLine();
                 }
 
                 question.UserAnswer = userAnswer;
@@ -376,7 +375,7 @@ namespace EpamTestConsole
             foreach (Management management in repository.GetListManagements())
             {
                 Console.WriteLine(ConsoleMenuConstant.Test + management.RootTest.Section.NameSection);
-                management.RootTest.WalkTheTree(management.RootTest, WriteResult);
+                TreeNode.WalkTheTree(management.RootTest, WriteResult);
             }
         }
 
@@ -394,7 +393,7 @@ namespace EpamTestConsole
             foreach (Management management in repository.GetListManagements(nameTest))
             {
                 Console.WriteLine(ConsoleMenuConstant.Test + management.RootTest.Section.NameSection);
-                management.RootTest.WalkTheTree(management.RootTest, WriteResult);
+                TreeNode.WalkTheTree(management.RootTest, WriteResult);
             }
         }
 
@@ -459,6 +458,22 @@ namespace EpamTestConsole
                 Console.WriteLine(ConsoleMenuConstant.DeleteTimer);
                 management.ConsoleTitileTimer = null;
             }
+        }
+
+        private void TimeIsOver(TreeNode test)
+        {
+            TreeNode.WalkTheTree(test, AddDefaultAnswer);
+        }
+        private void AddDefaultAnswer(TreeNode test)
+        {
+            foreach(Question question in test.Section.Questions)
+            {
+                if(question.UserAnswer == null)
+                {
+                    question.Result = ConsoleMenuConstant.TimeIsOver;
+                    question.UserAnswer = ConsoleMenuConstant.TimeIsOver;
+                }
+            }            
         }
     }
 }

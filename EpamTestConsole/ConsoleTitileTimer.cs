@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
+using static EpamTestConsole.TreeNode;
 
 namespace EpamTestConsole
 {
@@ -19,13 +19,23 @@ namespace EpamTestConsole
 
         public double TimeSeconds = 10;
 
-        public void StartTimer()
+        [NonSerialized]
+        private CancellationTokenSource cts;
+        [NonSerialized]
+        private CancellationToken token;
+
+        public async void StartTimer(TreeNode test, Metod WriteSectionToConsole)
         {
             Stop = false;
             startTest = DateTime.Now;
 
             tm = new TimerCallback(Time);
-            timer = new Timer(tm, null, 0, 1000);    
+            timer = new Timer(tm, null, 0, 1000);
+
+            cts = new CancellationTokenSource();
+            token = cts.Token;
+            
+            await Task.Run(() => TreeNode.WalkTheTree(test, WriteSectionToConsole, token));            
         }
 
         private void Time(object obj)
@@ -38,11 +48,12 @@ namespace EpamTestConsole
             if (passed > TimeSeconds)
             {                
                 Stop = true;
-                tm = null;
+                tm = null;                
+                cts.Cancel();
                 timer.Dispose();
                 return;
             }
-        } 
+        }       
     }
 }
 
