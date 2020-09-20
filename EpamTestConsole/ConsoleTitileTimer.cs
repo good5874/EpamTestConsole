@@ -17,7 +17,7 @@ namespace EpamTestConsole
         [NonSerialized]
         public bool Stop = false;
 
-        public double TimeSeconsd = 10;
+        public double TimeSeconds = 10;
 
         public void StartTimer()
         {
@@ -33,9 +33,9 @@ namespace EpamTestConsole
             var now = DateTime.Now;
             var passed = now.Subtract(startTest).TotalSeconds;
 
-            Console.Title = "Время начала теста: " + startTest.ToLongTimeString() + "  Сейчас:" + now.ToLongTimeString() + "  Прошло: " + passed;
+            Console.Title = "Время начала теста: " + startTest.ToLongTimeString() + "  Сейчас:" + now.ToLongTimeString() + "  Прошло: " + Math.Round(passed);
 
-            if (passed > TimeSeconsd)
+            if (passed > TimeSeconds)
             {                
                 Stop = true;
                 tm = null;

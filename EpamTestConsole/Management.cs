@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace EpamTestConsole
@@ -7,9 +8,9 @@ namespace EpamTestConsole
     public class Management
     {
         private TreeNode rootTest = new TreeNode(new Section("root"));
-        public bool CheckAfterInput = false;
+        public ConsoleTitileTimer ConsoleTitileTimer;
 
-        public ConsoleTitileTimer ConsoleTitileTimer = new ConsoleTitileTimer();
+        public bool CheckAfterInput = false;        
 
         public TreeNode RootTest
         {
@@ -83,12 +84,6 @@ namespace EpamTestConsole
             {
                 Console.WriteLine(ConsoleMenuConstant.Cancel);
             }
-        }
-
-        public string GetTrueAnswers()
-        {
-            
-            return null;
-        }
+        } 
     }
 }

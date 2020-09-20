@@ -10,8 +10,8 @@ namespace EpamTestConsole
         public bool CheckAnswer { get; set; }
         public bool Options { get; set; }
         public string Answer { get; set; }
-        public string UserAnswer { get; set; }// то что пользователь ввёл в ответ на вопрос, сохраняю в это поле. Если вопросе были варианты ответов то тут будет цифра
-        public string Result { get; set; }        
+        public string UserAnswer { get; set; }// то что пользователь ввёл в ответ на вопрос, сохраняю в это поле. Если в вопросе были варианты ответов то тут будет цифра
+        public string Result { get; set; }
         public List<string> AnswerOptions { get; set; }
 
         public Question(string question, bool checkAnswer, bool options,
@@ -31,7 +31,7 @@ namespace EpamTestConsole
         // 4. вопрос где сравнивается выбранный вариант ответа с ответом на вопрос в тесте
         public void CheckingAnswer() // разбить проверку без лишнего гемороя на 4 метода не получается))
         {
-            if(!Options)
+            if (!Options)
             {
                 if (!CheckAnswer)
                 {
@@ -57,18 +57,25 @@ namespace EpamTestConsole
                 }
                 else
                 {
-                    int i = int.Parse(UserAnswer);
-
-                    if (AnswerOptions[i] == Answer)
-                    {
-                        Result = "true";
-                    }
-                    else
+                    if (UserAnswer == ConsoleMenuConstant.IncorrectInput)
                     {
                         Result = "false";
                     }
+                    else
+                    {
+                        int i = int.Parse(UserAnswer);
+
+                        if (AnswerOptions[i] == Answer)
+                        {
+                            Result = "true";
+                        }
+                        else
+                        {
+                            Result = "false";
+                        }
+                    }
                 }
-            }  
+            }
         }
 
         public override string ToString()
@@ -76,11 +83,14 @@ namespace EpamTestConsole
             string userAnswer = UserAnswer;
             if (Options)
             {
-                int i = int.Parse(UserAnswer);
-                userAnswer = AnswerOptions[i];
-            }           
+                if (UserAnswer != ConsoleMenuConstant.IncorrectInput)
+                {
+                    int i = int.Parse(UserAnswer);
+                    userAnswer = AnswerOptions[i];
+                }
+            }
 
-            return $"TextQuestion = {TextQuestion}; UserAnswer = {userAnswer}; Result = {Result}";
+            return $"\tTextQuestion = {TextQuestion}; UserAnswer = {userAnswer}; Result = {Result}";
         }
     }
 }

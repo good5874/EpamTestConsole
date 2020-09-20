@@ -23,7 +23,8 @@
         public const string AddSection = "5. Добавить подтему";
         public const string DeleteSection = "6. Удалить подтему";
         public const string EditVerificationOptions = "7. Изменить как проверять результаты";
-        
+        public const string EditTimer = "8. Добавить/удалить таймер";
+
         public const string CheckAnswerAfterInput = "Проверять после ввода ответа?";
 
         public const string EnterNewName = "Введите новое название: ";
@@ -36,7 +37,7 @@
         public const string DeleteAnswerOption = "4. Удалить варианты ответов на вопросы";
 
         public const string EnterNewTextQuestion = "Введите новый вопрос: ";
-        public const string EnterNewAnswerQuestion = "Введите новый ответ: "; 
+        public const string EnterNewAnswerQuestion = "Введите новый ответ: ";
 
         public const string AddQuestionTo = "Добавить вопросы к ";
         public const string EnterQuestion = "Введите вопрос: ";
@@ -44,20 +45,27 @@
 
         public const string AddAnswerOptionTo = "Добавить варианты ответов к ";
         public const string AddSectionTo = "Добавить раздел к ";
-        public const string HowManySectionsToAdd = "Сколько разделов добавить к ";
+        public const string HowManySectionsAddTo = "Сколько разделов добавить к ";
 
         public const string EnterNameSections = "Введите названия разделов:";
-        public const string Sections = "Раздел: ";
+        public const string Test = "Тест: ";
+        public const string Section = "Раздел: ";
         public const string NotNamber = "Ввели не число";
+        public const string IncorrectInput = "Некорректный ввод";
 
         public const string Question = "Вопрос: ";
         public const string AnswerOptions = "Варианты ответа: ";
         public const string EnterAnswerOption = "Введите варианты ответов: ";
 
         public const string EnterNamber = "Введите нужный вариант ответа: ";
+        public const string TimeIsOver = "Время вышло";
 
         public const string GetHistory = "1. Получить историю всех пройденых тестов";
         public const string GetTestHistory = "2. Получить историю определенного теста";
+
+        public const string AddTime = "Добавить таймер?";
+        public const string EnterTimeInSeconds = "Введите время в секундах:";
+        public const string DeleteTimer = "Таймер удалён";
 
         public const string Saved = "Сохранено";
         public const string Save = "Сохранить";
