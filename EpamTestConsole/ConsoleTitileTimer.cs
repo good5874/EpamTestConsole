@@ -6,54 +6,55 @@ using static EpamTestConsole.TreeNode;
 namespace EpamTestConsole
 {
     [Serializable]
-    public class ConsoleTitileTimer
+    public class ConsoleTitileTimer : IDisposable
     {
         [NonSerialized]
         private Timer timer;
         [NonSerialized]
         private TimerCallback tm;
         [NonSerialized]
-        private static DateTime startTest;
-        [NonSerialized]
-        public bool Stop = false;
+        private static DateTime startTest;        
 
         public double TimeSeconds = 10;
 
         [NonSerialized]
-        private CancellationTokenSource cts;
+        public CancellationToken token;
         [NonSerialized]
-        private CancellationToken token;
+        private CancellationTokenSource cts;
 
-        public async void StartTimer(TreeNode test, Metod WriteSectionToConsole)
+        public async void StartTimer(TreeNode test, Metod WriteSectionToConsole, ManualResetEvent _eventMainMenu)
         {
-            Stop = false;
+            cts = new CancellationTokenSource();
+            token = cts.Token;
+
             startTest = DateTime.Now;
 
             tm = new TimerCallback(Time);
             timer = new Timer(tm, null, 0, 1000);
-
-            cts = new CancellationTokenSource();
-            token = cts.Token;
             
-            await Task.Run(() => TreeNode.WalkTheTree(test, WriteSectionToConsole, token));            
+            await Task.Run(() => TreeNode.WalkTheTree(test, WriteSectionToConsole, ref timer, ref _eventMainMenu, token));            
         }
 
         private void Time(object obj)
-        {
-            var now = DateTime.Now;
+        {            
+            var now = DateTime.Now;            
             var passed = now.Subtract(startTest).TotalSeconds;
 
             Console.Title = "Время начала теста: " + startTest.ToLongTimeString() + "  Сейчас:" + now.ToLongTimeString() + "  Прошло: " + Math.Round(passed);
 
             if (passed > TimeSeconds)
-            {                
-                Stop = true;
-                tm = null;                
+            {
                 cts.Cancel();
-                timer.Dispose();
+                Dispose();
                 return;
             }
-        }       
+        }
+
+        public void Dispose()
+        {
+            timer.Dispose();                      
+        }
+        
     }
 }
 

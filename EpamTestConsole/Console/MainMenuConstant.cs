@@ -1,6 +1,6 @@
 ﻿namespace EpamTestConsole
 {
-    public class Constant
+    public class MainMenuConstant
     {
         public const string CreateTest = "1";
         public const string StartTest = "2";

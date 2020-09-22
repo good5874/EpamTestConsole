@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 
 namespace EpamTestConsole
@@ -9,7 +8,7 @@ namespace EpamTestConsole
     {
         private Management management = new Management();
         public CheckedQuestionsRepository repository = new CheckedQuestionsRepository();
-
+        private ManualResetEvent _event;
         public delegate void Metod(TreeNode root);
 
         public void StartConsole()
@@ -22,22 +21,23 @@ namespace EpamTestConsole
             Console.WriteLine(ConsoleMenuConstant.EnterNamber);
             switch (Console.ReadLine())
             {
-                case "1":
+                case MainMenuConstant.CreateTest:
                     CreateTest();
                     TreeNode.WalkTheTree(management.RootTest, AddSection);
                     TreeNode.WalkTheTree(management.RootTest, AddQuestion);
                     Management.Save(management);
                     break;
-                case "2":
+                case MainMenuConstant.StartTest:
                     if (!Open())
                     {
                         return;
                     }
                     if (management.ConsoleTitileTimer != null)
                     {
-                        management.ConsoleTitileTimer.StartTimer(management.RootTest, WriteSectionToConsole);
-                        Thread.Sleep(11000);
-                        TimeIsOver(management.RootTest);
+                        _event = new ManualResetEvent(false);
+                        management.ConsoleTitileTimer.StartTimer(management.RootTest, WriteSectionToConsole, _event);
+                        _event.WaitOne();                        
+                        TimeIsOver(management.RootTest);                        
                     }
                     else
                     {
@@ -45,7 +45,7 @@ namespace EpamTestConsole
                     }                    
                     repository.SaveListManagment(management);
                     break;
-                case "3":
+                case MainMenuConstant.EditTest:
                     if (!Open())
                     {
                         return;
@@ -54,13 +54,17 @@ namespace EpamTestConsole
                     EditTest();
                     Management.Save(management);
                     break;
-                case "4":
+                case MainMenuConstant.ShowHistory:
                     WriteResultsHistoryToConsole();
                     break;
                 default:
                     Console.WriteLine(ConsoleMenuConstant.Cancel);
                     break;
             }
+            Console.WriteLine("Нажмите любую кнопку чтобы продолжить");
+            Console.ReadKey();
+            Console.Clear();
+            StartConsole();
         }
 
         private void CreateTest()
@@ -130,6 +134,11 @@ namespace EpamTestConsole
                     userAnswer = Console.ReadLine();
                 }
 
+                if (management.ConsoleTitileTimer != null &&
+                    management.ConsoleTitileTimer.token.IsCancellationRequested)
+                {                    
+                    return;
+                }
                 question.UserAnswer = userAnswer;
                 question.CheckingAnswer();
 
@@ -170,36 +179,36 @@ namespace EpamTestConsole
             Console.WriteLine(ConsoleMenuConstant.EnterNamber);
             switch (Console.ReadLine())
             {
-                case "1":
+                case EditMetuConstant.EditNameTest:
                     Console.WriteLine(ConsoleMenuConstant.EnterNewName);
                     newNameSection = Console.ReadLine();
                     management.EditNameSection(nameEdit, newNameSection);
                     break;
-                case "2":
+                case EditMetuConstant.EditQuestion:
                     Console.WriteLine(ConsoleMenuConstant.EnterNumberQuestion);
                     numberQuestionEdit = Console.ReadLine();
                     EditQuestion(nameEdit, numberQuestionEdit);
                     break;
-                case "3":
+                case EditMetuConstant.AddQuestions:
                     AddQuestion(node);
                     break;
-                case "4":
+                case EditMetuConstant.DeleteQuestion:
                     Console.WriteLine(ConsoleMenuConstant.EnterNumberQuestion);
                     numberQuestionDelete = Console.ReadLine();
                     management.DeleteQuestion(nameEdit, numberQuestionDelete);
                     break;
-                case "5":
+                case EditMetuConstant.AddSection:
                     AddSection(node);
                     break;
-                case "6":
+                case EditMetuConstant.DeleteSection:
                     Console.WriteLine(ConsoleMenuConstant.Delete + nameEdit);
                     //удалит дочерние подтемы
                     management.DeleteSection(nameEdit);
                     break;
-                case "7":
+                case EditMetuConstant.EditVerificationOptions:
                     VerificationOptions(management);
                     break;
-                case "8":
+                case EditMetuConstant.EditTimer:
                     AddTimer();
                     break;
 
