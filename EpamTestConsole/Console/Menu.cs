@@ -1,43 +1,51 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace EpamTestConsole
 {
     public class Menu
     {
-        private Management management = new Management();        
-        private readonly CheckedQuestionsRepository repository = new CheckedQuestionsRepository();
+        private Management management = new Management();
+        public CheckedQuestionsRepository repository = new CheckedQuestionsRepository();
+        private ManualResetEvent _event;
+        public delegate void Metod(TreeNode root);
 
-        private delegate void Metod(TreeNode root);
-        
         public void StartConsole()
-        {            
+        {
             Console.WriteLine(ConsoleMenuConstant.CreateTest);
             Console.WriteLine(ConsoleMenuConstant.StartTest);
             Console.WriteLine(ConsoleMenuConstant.EditTest);
             Console.WriteLine(ConsoleMenuConstant.ShowHistory);
-            
+
             Console.WriteLine(ConsoleMenuConstant.EnterNamber);
             switch (Console.ReadLine())
             {
-                case "1":
+                case MainMenuConstant.CreateTest:
                     CreateTest();
-                    WalkTheTree(management.RootTest , AddSection);
-                    WalkTheTree(management.RootTest , AddQuestion);
+                    TreeNode.WalkTheTree(management.RootTest, AddSection);
+                    TreeNode.WalkTheTree(management.RootTest, AddQuestion);
                     Management.Save(management);
                     break;
-                case "2":                    
-                    if(!Open())
+                case MainMenuConstant.StartTest:
+                    if (!Open())
                     {
                         return;
                     }
-
-                    management.ConsoleTitileTimer.StartTimer();
-
-                    WalkTheTree(management.RootTest, WriteSectionToConsole);
+                    if (management.ConsoleTitileTimer != null)
+                    {
+                        _event = new ManualResetEvent(false);
+                        management.ConsoleTitileTimer.StartTimer(management.RootTest, WriteSectionToConsole, _event);
+                        _event.WaitOne();                        
+                        TimeIsOver(management.RootTest);                        
+                    }
+                    else
+                    {
+                        TreeNode.WalkTheTree(management.RootTest, WriteSectionToConsole);
+                    }                    
                     repository.SaveListManagment(management);
                     break;
-                case "3":                    
+                case MainMenuConstant.EditTest:
                     if (!Open())
                     {
                         return;
@@ -46,13 +54,17 @@ namespace EpamTestConsole
                     EditTest();
                     Management.Save(management);
                     break;
-                case "4":
+                case MainMenuConstant.ShowHistory:
                     WriteResultsHistoryToConsole();
                     break;
                 default:
                     Console.WriteLine(ConsoleMenuConstant.Cancel);
                     break;
             }
+            Console.WriteLine("Нажмите любую кнопку чтобы продолжить");
+            Console.ReadKey();
+            Console.Clear();
+            StartConsole();
         }
 
         private void CreateTest()
@@ -62,6 +74,7 @@ namespace EpamTestConsole
             management.CreateNameTest(nameTest);
 
             VerificationOptions(management);
+            AddTimer();
         }
 
         private bool Open()
@@ -78,11 +91,11 @@ namespace EpamTestConsole
             return true;
         }
 
-        private void WriteSectionToConsole(TreeNode node)
-        {  
-            Console.WriteLine(node.Section.NameSection);
+        private void WriteSectionToConsole(TreeNode test)
+        {
+            Console.WriteLine(ConsoleMenuConstant.Section + test.Section.NameSection);
 
-            foreach (Question question in node.Section.Questions)
+            foreach (Question question in test.Section.Questions)
             {
                 string userAnswer;
                 Console.WriteLine(ConsoleMenuConstant.Question + question.TextQuestion);
@@ -101,19 +114,31 @@ namespace EpamTestConsole
                 {
                     Console.WriteLine(ConsoleMenuConstant.EnterAnswer);
                 }
-                
 
-                if (management.ConsoleTitileTimer.Stop)
+                if (question.Options)
                 {
-                    question.UserAnswer = "Время вышло";
-                    question.Result = "Время вышло";
-                    return;
+                    string temp = Console.ReadLine();
+                    bool isNum = int.TryParse(temp, out int number);
+                    if (question.AnswerOptions.Count > number && number >= 0
+                        && isNum)
+                    {
+                        userAnswer = number.ToString();
+                    }
+                    else
+                    {
+                        userAnswer = ConsoleMenuConstant.IncorrectInput;
+                    }
                 }
                 else
                 {
                     userAnswer = Console.ReadLine();
                 }
 
+                if (management.ConsoleTitileTimer != null &&
+                    management.ConsoleTitileTimer.token.IsCancellationRequested)
+                {                    
+                    return;
+                }
                 question.UserAnswer = userAnswer;
                 question.CheckingAnswer();
 
@@ -121,15 +146,15 @@ namespace EpamTestConsole
                 {
                     Console.WriteLine(question.ToString());
                 }
-
-            }            
+            }
+            Console.WriteLine(test.Section.ToString());
         }
 
         public void EditTest()
-        {     
+        {
             Console.WriteLine(ConsoleMenuConstant.EnterNameTestEdit);
             string nameEdit = Console.ReadLine();
-            var node = management.RootTest .Search(management.RootTest , nameEdit);
+            var node = management.RootTest.Search(management.RootTest, nameEdit);
 
             if (node == null)
             {
@@ -148,38 +173,43 @@ namespace EpamTestConsole
             Console.WriteLine(ConsoleMenuConstant.AddSection);
             Console.WriteLine(ConsoleMenuConstant.DeleteSection);
             Console.WriteLine(ConsoleMenuConstant.EditVerificationOptions);
+            Console.WriteLine(ConsoleMenuConstant.EditTimer);
+
 
             Console.WriteLine(ConsoleMenuConstant.EnterNamber);
             switch (Console.ReadLine())
             {
-                case "1":
+                case EditMetuConstant.EditNameTest:
                     Console.WriteLine(ConsoleMenuConstant.EnterNewName);
                     newNameSection = Console.ReadLine();
                     management.EditNameSection(nameEdit, newNameSection);
                     break;
-                case "2":
+                case EditMetuConstant.EditQuestion:
                     Console.WriteLine(ConsoleMenuConstant.EnterNumberQuestion);
                     numberQuestionEdit = Console.ReadLine();
                     EditQuestion(nameEdit, numberQuestionEdit);
                     break;
-                case "3":
+                case EditMetuConstant.AddQuestions:
                     AddQuestion(node);
                     break;
-                case "4":
+                case EditMetuConstant.DeleteQuestion:
                     Console.WriteLine(ConsoleMenuConstant.EnterNumberQuestion);
                     numberQuestionDelete = Console.ReadLine();
                     management.DeleteQuestion(nameEdit, numberQuestionDelete);
                     break;
-                case "5":
+                case EditMetuConstant.AddSection:
                     AddSection(node);
                     break;
-                case "6":
+                case EditMetuConstant.DeleteSection:
                     Console.WriteLine(ConsoleMenuConstant.Delete + nameEdit);
                     //удалит дочерние подтемы
                     management.DeleteSection(nameEdit);
                     break;
-                case "7":
+                case EditMetuConstant.EditVerificationOptions:
                     VerificationOptions(management);
+                    break;
+                case EditMetuConstant.EditTimer:
+                    AddTimer();
                     break;
 
                 default:
@@ -194,7 +224,7 @@ namespace EpamTestConsole
 
             Question question = node.Section.Questions[Convert.ToInt32(indexQuestion)];
 
-            string textQuestion= question.TextQuestion;
+            string textQuestion = question.TextQuestion;
             string answer = "";
             List<string> answerOptions = null;
             bool checkAnswer = false;
@@ -237,36 +267,15 @@ namespace EpamTestConsole
                 options = true;
             }
 
-            question = new Question(textQuestion, checkAnswer, options, answer, answerOptions);            
+            question = new Question(textQuestion, checkAnswer, options, answer, answerOptions);
             management.EditQuestion(nameSection, question, indexQuestion);
         }
 
-        private void WalkTheTree(TreeNode root, Metod metod)
+        private void AddQuestion(TreeNode test)
         {
-            Queue<TreeNode> queue = new Queue<TreeNode>();
-            queue.Enqueue(root);
-
-            while (queue.Count != 0)
-            {
-                TreeNode temp = queue.Dequeue();
-                metod(temp);                
-
-                if (temp.ChildNodes == null)
-                {
-                    continue;
-                }
-                foreach (var node in temp.ChildNodes)
-                {
-                    queue.Enqueue(node);
-                }
-            }
-        }
-
-        private void AddQuestion(TreeNode node)
-        {
-            Console.WriteLine(ConsoleMenuConstant.AddQuestionTo + $"<{node.Section.NameSection}>?");
+            Console.WriteLine(ConsoleMenuConstant.AddQuestionTo + $"<{test.Section.NameSection}>?");
             if (Console.ReadLine() == ConsoleСommand.y.ToString())
-            {    
+            {
                 string textQuestion;
                 string answer = "";
                 List<string> answerOptions = null;
@@ -302,7 +311,7 @@ namespace EpamTestConsole
                     }
 
                     var question = new Question(textQuestion, checkAnswer, options, answer, answerOptions);
-                    management.CreateQuestion(node.Section.NameSection, question);
+                    management.CreateQuestion(test.Section.NameSection, question);
                 }
             }
             else
@@ -333,28 +342,29 @@ namespace EpamTestConsole
                     {
                         answerOptions.Add(tmp);
                     }
-                }                
+                }
             }
             return answerOptions;
         }
 
-        private void AddSection(TreeNode node)
-        {            
-            Console.WriteLine(ConsoleMenuConstant.AddSectionTo + $"<{node.Section.NameSection}>?");
+        private void AddSection(TreeNode test)
+        {
+            Console.WriteLine(ConsoleMenuConstant.AddSectionTo + $"<{test.Section.NameSection}>?");
             if (Console.ReadLine() == ConsoleСommand.y.ToString())
             {
-                Console.WriteLine(ConsoleMenuConstant.HowManySectionsToAdd + $"<{node.Section.NameSection}>?");
+                Console.WriteLine(ConsoleMenuConstant.HowManySectionsAddTo + $"<{test.Section.NameSection}>?");                        
 
-                string strsectionCount = Console.ReadLine();
-                bool isNum = int.TryParse(strsectionCount, out  int intsectionCount);
+                string temp = Console.ReadLine();
+                bool isNum = int.TryParse(temp, out int sectionCount);
                 if (isNum)
                 {
                     Console.WriteLine(ConsoleMenuConstant.EnterNameSections);
-                    for (int i = 1; i < intsectionCount + 1; i++)
+                    for (int i = 1; i < sectionCount + 1; i++)
                     {
-                        Console.WriteLine(ConsoleMenuConstant.Sections + i);
-                        string nameSection = Console.ReadLine();                       
-                        management.CreateSection(node.Section.NameSection, new Section(nameSection));
+                        Console.WriteLine(ConsoleMenuConstant.Section + i);
+                        string nameSection = Console.ReadLine();                        
+
+                        management.CreateSection(test.Section.NameSection, new Section(nameSection));
                     }
                 }
                 else
@@ -366,15 +376,15 @@ namespace EpamTestConsole
             else
             {
                 Console.WriteLine(ConsoleMenuConstant.Cancel);
-            }
+            }         
         }
 
         private void WriteResultToConsole()
         {
             foreach (Management management in repository.GetListManagements())
             {
-                Console.WriteLine(ConsoleMenuConstant.Sections + management.RootTest.Section.NameSection);
-                WalkTheTree(management.RootTest, WriteResult);               
+                Console.WriteLine(ConsoleMenuConstant.Test + management.RootTest.Section.NameSection);
+                TreeNode.WalkTheTree(management.RootTest, WriteResult);
             }
         }
 
@@ -384,14 +394,15 @@ namespace EpamTestConsole
             {
                 Console.WriteLine(question.ToString());
             }
+            Console.WriteLine(test.Section.ToString());
         }
 
         private void WriteResultToConsole(string nameTest)
         {
             foreach (Management management in repository.GetListManagements(nameTest))
             {
-                Console.WriteLine(ConsoleMenuConstant.Sections + management.RootTest.Section.NameSection);
-                WalkTheTree(management.RootTest, WriteResult);
+                Console.WriteLine(ConsoleMenuConstant.Test + management.RootTest.Section.NameSection);
+                TreeNode.WalkTheTree(management.RootTest, WriteResult);
             }
         }
 
@@ -414,7 +425,7 @@ namespace EpamTestConsole
                     Console.WriteLine(ConsoleMenuConstant.Cancel);
                     break;
             }
-        }      
+        }
 
         private void VerificationOptions(Management management)
         {
@@ -427,6 +438,51 @@ namespace EpamTestConsole
             {
                 management.CheckAfterInput = false;
             }
+        }  
+        
+        private void AddTimer()
+        {
+            Console.WriteLine(ConsoleMenuConstant.AddTime);
+            if (Console.ReadLine() == ConsoleСommand.y.ToString())
+            {
+                Console.WriteLine(ConsoleMenuConstant.EnterTimeInSeconds);
+
+                string seconds = Console.ReadLine();
+
+                bool isNum = int.TryParse(seconds, out int number);
+                if (number >= 0 && isNum)
+                {
+                    management.ConsoleTitileTimer = new ConsoleTitileTimer();
+                    management.ConsoleTitileTimer.TimeSeconds = number;
+                }
+                else
+                {
+                    Console.WriteLine(ConsoleMenuConstant.NotNamber);
+                    Console.WriteLine(ConsoleMenuConstant.Cancel);
+                    management.ConsoleTitileTimer = null;
+                }
+            }
+            else
+            {
+                Console.WriteLine(ConsoleMenuConstant.DeleteTimer);
+                management.ConsoleTitileTimer = null;
+            }
+        }
+
+        private void TimeIsOver(TreeNode test)
+        {
+            TreeNode.WalkTheTree(test, AddDefaultAnswer);
+        }
+        private void AddDefaultAnswer(TreeNode test)
+        {
+            foreach(Question question in test.Section.Questions)
+            {
+                if(question.UserAnswer == null)
+                {
+                    question.Result = ConsoleMenuConstant.TimeIsOver;
+                    question.UserAnswer = ConsoleMenuConstant.TimeIsOver;
+                }
+            }            
         }
     }
 }

@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace EpamTestConsole
 {
     [Serializable]
     public class TreeNode
-    {        
+    {
+        public delegate void Metod(TreeNode root);        
         public TreeNode(Section section)
         {
             Section = section;               
@@ -80,6 +82,58 @@ namespace EpamTestConsole
             }
 
             return null;
+        }      
+
+        public static void WalkTheTree(TreeNode root, Metod metod)
+        {
+            Queue<TreeNode> queue = new Queue<TreeNode>();
+            queue.Enqueue(root);
+
+            while (queue.Count != 0)
+            {
+                TreeNode temp = queue.Dequeue();
+                metod(temp);
+
+                if (temp.ChildNodes == null)
+                {
+                    continue;
+                }
+                foreach (var node in temp.ChildNodes)
+                {
+                    queue.Enqueue(node);
+                }
+            }
+        }
+        public static void WalkTheTree(TreeNode root, Metod metod, 
+            ref Timer timer, ref ManualResetEvent _eventMainMenu, CancellationToken token)
+        {           
+
+            Queue<TreeNode> queue = new Queue<TreeNode>();
+            queue.Enqueue(root);
+
+            while (queue.Count != 0)
+            {
+                TreeNode temp = queue.Dequeue();
+                metod(temp);
+                if (token.IsCancellationRequested)
+                {
+                    Console.WriteLine(ConsoleMenuConstant.TimeIsOver);
+                    _eventMainMenu.Set();
+                    return;
+                }
+
+                if (temp.ChildNodes == null)
+                {
+                    continue;
+                }
+                foreach (var node in temp.ChildNodes)
+                {
+                    queue.Enqueue(node);
+                }
+            }
+
+            timer.Dispose();
+            _eventMainMenu.Set();
         }
     }
 }
