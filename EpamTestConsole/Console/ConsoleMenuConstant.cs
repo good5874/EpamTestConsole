@@ -7,13 +7,15 @@
         public const string EditTest = "3. Редактировать тест";
         public const string ShowHistory = "4. Показать всю историю";
 
+        public const string Continue = "Нажмите любую кнопку чтобы продолжить";
+
         public const string Cancel = "Отмена";
 
         public const string EnterFileName = "Введите имя файла теста: ";
         public const string FileNotFound = "Файл не найден";
 
         public const string EnterNameTest = "Введите тему теста: ";
-        public const string EnterNameTestEdit = "Введите тему или подтему, которую нужно редактировать: ";
+        public const string EnterNameTestEdit = "Введите тему, которую нужно редактировать: ";
         public const string TestNotFound = "Тема не найдена: ";
 
         public const string EditNameTest = "1. Изменить название темы";
@@ -72,5 +74,8 @@
 
         public const string EnterN = "Введите <n> когда надо остановиться";
         public const string EnterY = "Введите <y> когда надо остановиться";
+
+        public const string Y_N = "<y - да, n - нет>";
+
     }
 }

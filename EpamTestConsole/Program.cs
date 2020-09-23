@@ -1,11 +1,11 @@
 ﻿namespace EpamTestConsole
-{   
+{
     internal class Program
     {
         static void Main(string[] args)
         {
             Menu menu = new Menu();
-            menu.StartConsole();        
+            menu.StartConsole();
         }
     }
 }

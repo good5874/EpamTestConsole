@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 
 namespace EpamTestConsole
@@ -9,14 +7,13 @@ namespace EpamTestConsole
     [Serializable]
     public class TreeNode
     {
-        public delegate void Metod(TreeNode root);        
         public TreeNode(Section section)
         {
-            Section = section;               
-        }       
-        public Section Section { get; set; }           
+            Section = section;
+        }
+        public Section Section { get; set; }
 
-        public List<TreeNode> ChildNodes { get; private set; }       
+        public List<TreeNode> ChildNodes { get; private set; }
 
         public void AddChildNode(TreeNode node)
         {
@@ -24,22 +21,22 @@ namespace EpamTestConsole
             {
                 ChildNodes = new List<TreeNode>();
             }
-            ChildNodes.Add(node);           
-        }        
-        
-        public void Delete(ref TreeNode root,string name)// также стирает все дочерние узлы, если имеются
-        {  
-            Queue<TreeNode> queue = new Queue<TreeNode>(); 
-            queue.Enqueue(root); 
+            ChildNodes.Add(node);
+        }
 
-            if(root.Section.NameSection == name)
+        public void Delete(ref TreeNode root, string name)// также стирает все дочерние узлы, если имеются
+        {
+            Queue<TreeNode> queue = new Queue<TreeNode>();
+            queue.Enqueue(root);
+
+            if (root.Section.NameSection == name)
             {
-                root = null;                
+                root = null;
             }
 
-            while (queue.Count!=0) 
+            while (queue.Count != 0)
             {
-                TreeNode temp = queue .Dequeue();
+                TreeNode temp = queue.Dequeue();
                 if (temp.ChildNodes == null)
                 {
                     continue;
@@ -47,13 +44,13 @@ namespace EpamTestConsole
                 foreach (var node in temp.ChildNodes)
                 {
                     if (node.Section.NameSection == name)
-                    {                        
-                         temp.ChildNodes.Remove(node);
+                    {
+                        temp.ChildNodes.Remove(node);
                         return;
                     }
-                    queue .Enqueue(node);
-                }   
-            }           
+                    queue.Enqueue(node);
+                }
+            }
         }
 
         public TreeNode Search(TreeNode root, string name)
@@ -74,7 +71,7 @@ namespace EpamTestConsole
                 foreach (var node in temp.ChildNodes)
                 {
                     if (node.Section.NameSection == name)
-                    {                        
+                    {
                         return node;
                     }
                     queue.Enqueue(node);
@@ -82,9 +79,9 @@ namespace EpamTestConsole
             }
 
             return null;
-        }      
+        }
 
-        public static void WalkTheTree(TreeNode root, Metod metod)
+        public static void WalkTheTree(TreeNode root, TreeNodeOperation operation)
         {
             Queue<TreeNode> queue = new Queue<TreeNode>();
             queue.Enqueue(root);
@@ -92,7 +89,7 @@ namespace EpamTestConsole
             while (queue.Count != 0)
             {
                 TreeNode temp = queue.Dequeue();
-                metod(temp);
+                operation(temp);
 
                 if (temp.ChildNodes == null)
                 {
@@ -104,9 +101,9 @@ namespace EpamTestConsole
                 }
             }
         }
-        public static void WalkTheTree(TreeNode root, Metod metod, 
+        public static void WalkTheTree(TreeNode root, TreeNodeOperation WriteSectionToConsole,
             ref Timer timer, ref ManualResetEvent _eventMainMenu, CancellationToken token)
-        {           
+        {
 
             Queue<TreeNode> queue = new Queue<TreeNode>();
             queue.Enqueue(root);
@@ -114,7 +111,7 @@ namespace EpamTestConsole
             while (queue.Count != 0)
             {
                 TreeNode temp = queue.Dequeue();
-                metod(temp);
+                WriteSectionToConsole(temp);
                 if (token.IsCancellationRequested)
                 {
                     Console.WriteLine(ConsoleMenuConstant.TimeIsOver);

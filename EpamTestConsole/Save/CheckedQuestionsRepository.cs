@@ -21,7 +21,7 @@ namespace EpamTestConsole
             }
             else
             {
-                ListManagment = OpenListManagment();                
+                ListManagment = OpenListManagment();
             }
         }
 
@@ -61,7 +61,7 @@ namespace EpamTestConsole
 
         public List<Management> GetListManagements(string nametest)
         {
-            return ListManagment.Where(x => x.RootTest.Section.NameSection == nametest).ToList();             
+            return ListManagment.Where(x => x.RootTest.Section.NameSection == nametest).ToList();
         }
     }
 }
