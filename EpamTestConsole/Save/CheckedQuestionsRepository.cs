@@ -11,11 +11,14 @@ namespace EpamTestConsole
     {
         private List<Management> ListManagment;
 
-        private string nameFile = "CheckedQuestionsRepository";
-
+        private string path = $"History/CheckedQuestionsRepository.dat";
         public CheckedQuestionsRepository()
         {
-            if (!File.Exists(nameFile + ".dat"))
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory("History");
+            }
+            if (!File.Exists(path))
             {
                 ListManagment = new List<Management>();
             }
@@ -37,7 +40,7 @@ namespace EpamTestConsole
             }
             BinaryFormatter formatter = new BinaryFormatter();
 
-            using (FileStream fs = new FileStream($"{nameFile}.dat", FileMode.OpenOrCreate))
+            using (FileStream fs = new FileStream(path, FileMode.OpenOrCreate))
             {
                 formatter.Serialize(fs, ListManagment);
             }
@@ -47,7 +50,7 @@ namespace EpamTestConsole
         {
             BinaryFormatter formatter = new BinaryFormatter();
 
-            using (FileStream fs = new FileStream($"{nameFile}.dat", FileMode.OpenOrCreate))
+            using (FileStream fs = new FileStream(path, FileMode.Open))
             {
                 List<Management> deserilizeListManagment = (List<Management>)formatter.Deserialize(fs);
                 return deserilizeListManagment;
