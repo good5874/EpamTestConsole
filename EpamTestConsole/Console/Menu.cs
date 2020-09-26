@@ -339,6 +339,7 @@ namespace EpamTestConsole
             List<string> answerOptions = null;
 
             Console.WriteLine(ConsoleMenuConstant.AddAnswerOptionTo + $"<{nameQuestion}>?");
+            Console.WriteLine(ConsoleMenuConstant.Y_N);
             if (Console.ReadLine() == ConsoleСommand.y.ToString())
             {
                 Console.WriteLine(ConsoleMenuConstant.EnterN);

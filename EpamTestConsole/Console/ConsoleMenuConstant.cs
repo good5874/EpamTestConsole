@@ -72,8 +72,8 @@
         public const string Saved = "Сохранено";
         public const string Save = "Сохранить";
 
-        public const string EnterN = "Введите <n> когда надо остановиться";
-        public const string EnterY = "Введите <y> когда надо остановиться";
+        public const string EnterN = "Введите <n> когда надо остановиться добавлять ответы на вопросы";
+        public const string EnterY = "Введите <y> когда надо остановиться добавлять вопросы";
 
         public const string Y_N = "<y - да, n - нет>";
 
