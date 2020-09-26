@@ -5,11 +5,16 @@ namespace EpamTestConsole
 {
     public static class TestRepository
     {
+        private static string path = $"Tests/";
         public static void SaveTest(Management management, string nameFile)
         {
             BinaryFormatter formatter = new BinaryFormatter();
 
-            using (FileStream fs = new FileStream($"{nameFile}.dat", FileMode.OpenOrCreate))
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+            using (FileStream fs = new FileStream($"{path}{nameFile}.dat", FileMode.OpenOrCreate))
             {
                 formatter.Serialize(fs, management);
             }
@@ -20,7 +25,7 @@ namespace EpamTestConsole
             BinaryFormatter formatter = new BinaryFormatter();
             try
             {
-                using (FileStream fs = new FileStream($"{nameFile}.dat", FileMode.Open))
+                using (FileStream fs = new FileStream($"{path}{nameFile}.dat", FileMode.Open))
                 {
                     Management deserilizeManagement = (Management)formatter.Deserialize(fs);
                     return deserilizeManagement;
