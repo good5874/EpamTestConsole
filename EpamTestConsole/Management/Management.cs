@@ -43,7 +43,7 @@ namespace EpamTestConsole
         {
             var test = RootTest.Search(RootTest, nameSection);
             int i = int.Parse(indexQuestion);
-            test.Section.Questions[i] = question;
+            test.Section.Questions[i- 1] = question;
         }
 
         public void CreateSection(string name, Section section)
@@ -56,7 +56,7 @@ namespace EpamTestConsole
         {
             var test = RootTest.Search(RootTest, nameSection);
             int i = Convert.ToInt32(indexQuestion);
-            test.Section.Questions.RemoveAt(i);
+            test.Section.Questions.RemoveAt(i - 1);
         }
 
         public void DeleteSection(string nameSection)

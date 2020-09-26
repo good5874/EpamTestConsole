@@ -238,10 +238,10 @@ namespace EpamTestConsole
             Question question = node.Section.Questions[Convert.ToInt32(indexQuestion) - 1];
 
             string textQuestion = question.TextQuestion;
-            string answer = "";
-            List<string> answerOptions = null;
-            bool checkAnswer = false;
-            bool options = false;
+            string answer = question.Answer;
+            List<string> answerOptions = question.AnswerOptions;
+            bool checkAnswer = question.CheckAnswer;
+            bool options = question.Options;
 
             Console.WriteLine(ConsoleMenuConstant.EditNameQuestion);
             Console.WriteLine(ConsoleMenuConstant.EditAnswerQuestion);
