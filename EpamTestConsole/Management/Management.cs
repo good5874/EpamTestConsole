@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace EpamTestConsole
 {
@@ -10,7 +8,7 @@ namespace EpamTestConsole
         private TreeNode rootTest = new TreeNode(new Section("root"));
         public ConsoleTitileTimer ConsoleTitileTimer;
 
-        public bool CheckAfterInput = false;        
+        public bool CheckAfterInput = false;
 
         public TreeNode RootTest
         {
@@ -48,8 +46,8 @@ namespace EpamTestConsole
             test.Section.Questions[i] = question;
         }
 
-        public void CreateSection(string  name, Section section)
-        {           
+        public void CreateSection(string name, Section section)
+        {
             var test = RootTest.Search(RootTest, name);
             test.AddChildNode(new TreeNode(section));
         }
@@ -73,6 +71,7 @@ namespace EpamTestConsole
                 return;
             }
             Console.WriteLine(ConsoleMenuConstant.Save + "?");
+            Console.WriteLine(ConsoleMenuConstant.Y_N);
             if (Console.ReadLine() == ConsoleСommand.y.ToString())
             {
                 Console.WriteLine(ConsoleMenuConstant.EnterFileName);
@@ -84,6 +83,6 @@ namespace EpamTestConsole
             {
                 Console.WriteLine(ConsoleMenuConstant.Cancel);
             }
-        } 
+        }
     }
 }
