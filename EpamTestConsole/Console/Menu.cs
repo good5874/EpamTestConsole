@@ -290,12 +290,6 @@ namespace EpamTestConsole
             Console.WriteLine(ConsoleMenuConstant.Y_N);
             if (Console.ReadLine() == ConsoleСommand.y.ToString())
             {
-                string textQuestion;
-                string answer = "";
-                List<string> answerOptions = null;
-                bool checkAnswer = false;
-                bool options = false;
-
                 for (int i = 0; ; i++)
                 {
                     if (i > 0)
@@ -306,6 +300,12 @@ namespace EpamTestConsole
                             return;
                         }
                     }
+
+                    string textQuestion;
+                    string answer = "";
+                    List<string> answerOptions = null;
+                    bool checkAnswer = false;
+                    bool options = false;
 
                     Console.WriteLine(ConsoleMenuConstant.EnterQuestion);
                     textQuestion = Console.ReadLine();
